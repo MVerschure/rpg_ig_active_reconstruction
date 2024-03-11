@@ -18,15 +18,15 @@ along with movements. If not, see <http://www.gnu.org/licenses/>.
 
 /// set of explicit conversion functions between ros and st_is
 
-#include "geometry_msgs/Pose.h"
+#include <geometry_msgs/msg/pose.hpp>
 #include "movements/geometry_pose.h"
 
 namespace movements
 {
 
-geometry_msgs::Pose toROS( movements::Pose _pose );
-movements::Pose fromROS( geometry_msgs::Pose _pose );
-std::vector<geometry_msgs::Pose> toROS( movements::PoseVector _to_convert );
-movements::PoseVector fromROS( std::vector<geometry_msgs::Pose> _to_convert );
+geometry_msgs::msg::Pose toROS( movements::Pose _pose );
+movements::Pose fromROS( geometry_msgs::msg::Pose _pose );
+std::vector<geometry_msgs::msg::Pose> toROS( movements::PoseVector _to_convert );
+movements::PoseVector fromROS( std::vector<geometry_msgs::msg::Pose> _to_convert );
 
 }

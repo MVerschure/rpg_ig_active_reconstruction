@@ -4,8 +4,26 @@ set(CMAKE_BUILD_TYPE Release)
 
 list( APPEND CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
-find_package(catkin REQUIRED COMPONENTS
-  cmake_modules
+find_package(ament_cmake REQUIRED)
+find_package(cmake_modules REQUIRED)
+find_package(roscpp REQUIRED)
+find_package(urdf REQUIRED)
+find_package(ig_active_reconstruction REQUIRED)
+find_package(ig_active_reconstruction_msgs REQUIRED)
+find_package(ig_active_reconstruction_ros REQUIRED)
+find_package(ig_active_reconstruction_octomap REQUIRED)
+find_package(movements REQUIRED)
+find_package(tf REQUIRED)
+find_package(gazebo_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+
+find_package(Eigen REQUIRED)
+find_package(Boost REQUIRED)
+
+ament_export_dependencies(include)
+ament_export_libraries(${PROJECT_NAME})
+ament_export_dependencies(
   roscpp
   urdf
   ig_active_reconstruction
@@ -13,31 +31,8 @@ find_package(catkin REQUIRED COMPONENTS
   ig_active_reconstruction_ros
   ig_active_reconstruction_octomap
   movements
-  tf
-  gazebo_msgs
   geometry_msgs
   sensor_msgs
-)
-
-find_package(Eigen REQUIRED)
-find_package(Boost REQUIRED)
-
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS
-    roscpp
-    urdf
-    ig_active_reconstruction
-    ig_active_reconstruction_msgs
-    ig_active_reconstruction_ros
-    ig_active_reconstruction_octomap
-    movements
-    geometry_msgs
-    sensor_msgs
-  DEPENDS
-    Eigen
-    Boost
 )
 
 include_directories(include
@@ -72,3 +67,6 @@ target_link_libraries(robot_interface
 add_dependencies(robot_interface
  ${catkin_EXPORTED_TARGETS}
 )
+
+
+ament_package()

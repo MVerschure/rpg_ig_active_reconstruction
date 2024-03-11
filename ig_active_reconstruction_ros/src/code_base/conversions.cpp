@@ -182,7 +182,7 @@ namespace ros_conversions
   {
     world_representation::CommunicationInterface::IgRetrievalCommand command;
     
-    for( geometry_msgs::Pose& pose: command_msg.poses )
+    for( geometry_msgs::msg::Pose& pose: command_msg.poses )
     {
       command.path.push_back( movements::fromROS(pose) );
     }

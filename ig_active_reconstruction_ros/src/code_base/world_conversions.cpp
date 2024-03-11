@@ -56,7 +56,7 @@ namespace ros_conversions
   {
     world_representation::CommunicationInterface::IgRetrievalCommand command;
     
-    BOOST_FOREACH( geometry_msgs::Pose& pose, command_msg.poses )
+    BOOST_FOREACH( geometry_msgs::msg::Pose& pose, command_msg.poses )
     {
       command.path.push_back( movements::fromROS(pose) );
     }

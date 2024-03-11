@@ -96,7 +96,7 @@ namespace flying_gazebo_stereo_cam
     {
       if(true||has_moved_)
       {
-	geometry_msgs::Pose pose;
+	geometry_msgs::msg::Pose pose;
 	{
 	  std::lock_guard<std::mutex> guard(protector_);
 	  pose = movements::toROS( currentPose()/*current_pose_*/ );

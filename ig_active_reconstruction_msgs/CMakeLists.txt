@@ -1,50 +1,41 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(ig_active_reconstruction_msgs)
-set(CMAKE_BUILD_TYPE Release)
 
-find_package(catkin REQUIRED COMPONENTS
-  cmake_modules
-  message_generation
-  geometry_msgs
-  sensor_msgs
-)
-add_message_files(
-  FILES
-  InformationGain.msg
-  InformationGainRetrievalCommand.msg
-  InformationGainRetrievalConfig.msg
-  MovementCostMsg.msg
-  SubWindow.msg
-  ViewMsg.msg
-  ViewSpaceMsg.msg
-)
+find_package(ament_cmake REQUIRED) 
+#find_package(cmake_modules REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
-add_service_files(
-  FILES
-  DeleteViews.srv
-  InformationGainCalculation.srv
-  MapMetricCalculation.srv
-  MovementCostCalculation.srv
-  MoveToOrder.srv
-  PclInput.srv
-  RetrieveData.srv
-  StringList.srv
-  ViewRequest.srv
-  ViewSpaceRequest.srv
-  ViewSpaceUpdate.srv
-)
-
-generate_messages(
-  DEPENDENCIES
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/InformationGain.msg"
+  "msg/InformationGainRetrievalCommand.msg"
+  "msg/InformationGainRetrievalConfig.msg"
+  "msg/MovementCostMsg.msg"
+  "msg/SubWindow.msg"
+  "msg/ViewMsg.msg"
+  "msg/ViewSpaceMsg.msg"
+  "srv/DeleteViews.srv"
+  "srv/InformationGainCalculation.srv"
+  "srv/MapMetricCalculation.srv"
+  "srv/MovementCostCalculation.srv"
+  "srv/MoveToOrder.srv"
+  "srv/PclInput.srv"
+  "srv/RetrieveData.srv"
+  "srv/StringList.srv"
+  "srv/ViewRequest.srv"
+  "srv/ViewSpaceRequest.srv"
+  "srv/ViewSpaceUpdate.srv"
+  DEPENDENCIES 
   std_msgs
   geometry_msgs
   sensor_msgs
 )
 
-catkin_package(
-  CATKIN_DEPENDS message_runtime
-)
+ament_export_dependencies(message_runtime)
 
 include_directories(include
   ${catkin_INCLUDE_DIRS}
 )
+
+ament_package()
