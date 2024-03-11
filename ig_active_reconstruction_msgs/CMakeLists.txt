@@ -34,8 +34,4 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
 ament_export_dependencies(message_runtime)
 
-include_directories(include
-  ${catkin_INCLUDE_DIRS}
-)
-
 ament_package()
