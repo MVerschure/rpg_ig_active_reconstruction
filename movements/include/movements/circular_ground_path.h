@@ -16,7 +16,7 @@ along with movements. If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
-#include <movements/core>
+#include <movements/core.h>
 #include <Eigen/Geometry>
 #include <Eigen/StdVector>
 

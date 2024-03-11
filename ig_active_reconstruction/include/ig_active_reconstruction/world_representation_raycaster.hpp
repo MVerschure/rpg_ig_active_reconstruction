@@ -18,7 +18,7 @@
 #pragma once
 
 #include <Eigen/Core>
-#include <movements/core>
+#include <movements/core.h>
 
 #include <vector>
 #include <memory>

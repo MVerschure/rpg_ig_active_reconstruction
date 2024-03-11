@@ -20,7 +20,7 @@
 #include <Eigen/Core>
 #include <thread>
 #include <mutex>
-#include <movements/core>
+#include <movements/core.h>
 #include <tf/transform_broadcaster.h>
 
 namespace flying_gazebo_stereo_cam

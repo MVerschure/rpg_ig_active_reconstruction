@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "movements/core"
+#include "movements/core.h"
 
 namespace ig_active_reconstruction
 {

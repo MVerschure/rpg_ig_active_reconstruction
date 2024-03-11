@@ -18,7 +18,7 @@
 #ifndef IG_BASED_ACTIVE_RECONSTRUCTION_VIEW_H_
 #define IG_BASED_ACTIVE_RECONSTRUCTION_VIEW_H_
 
-#include "movements/core"
+#include "movements/core.h"
 
 namespace ig_active_reconstruction
 {
