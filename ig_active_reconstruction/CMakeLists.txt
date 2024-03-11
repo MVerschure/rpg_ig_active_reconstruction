@@ -1,33 +1,26 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(ig_active_reconstruction)
-set(CMAKE_BUILD_TYPE Release)
 
-list( APPEND CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
-find_package(catkin REQUIRED COMPONENTS
-  cmake_modules
-  movements
-)
+# Default to C++17
+set(CMAKE_CXX_STANDARD 11)
 
-find_package(Eigen REQUIRED)
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+endif()
 
-catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS
-    movements
-  DEPENDS
-    Eigen
-    Boost
-)
-
+find_package(ament_cmake REQUIRED)
+find_package(movements REQUIRED)
 find_package(Boost REQUIRED)
+
 
 include_directories(include
   ${catkin_INCLUDE_DIRS}
-  ${Eigen_INCLUDE_DIRS}
+  ${movements_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
+
+INCLUDE_DIRECTORIES ( "$ENV{EIGEN3_INCLUDE_DIR}" )
 
 file(GLOB ${PROJECT_NAME}_CODE_BASE
   "src/code_base/*.cpp"
@@ -43,6 +36,7 @@ target_link_libraries(${PROJECT_NAME}
    ${Boost_LIBRARIES}
 )
 
-add_dependencies(${PROJECT_NAME} 
- ${catkin_EXPORTED_TARGETS}
-)
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
+ament_export_dependencies(movements)
+ament_package()
