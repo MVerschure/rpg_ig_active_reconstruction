@@ -7,7 +7,7 @@ find_package(angles REQUIRED)
 
 
 include_directories(include
-  ${Eigen_INCLUDE_DIRS}
+  #${Eigen_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
 
@@ -21,16 +21,18 @@ add_library(${PROJECT_NAME}
   ${${PROJECT_NAME}_CODE_BASE}
 )
 
-
 ament_target_dependencies(${PROJECT_NAME}
   geometry_msgs
   angles
 )
 
-# target_link_libraries(${PROJECT_NAME}_CODE_BASE)
-
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
 
 ament_export_dependencies(angles)
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
+#ament_export_libraries(${PROJECT_NAME})
+
 ament_package()
