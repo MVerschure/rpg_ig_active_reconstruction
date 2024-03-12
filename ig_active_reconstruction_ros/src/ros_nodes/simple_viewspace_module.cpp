@@ -15,7 +15,7 @@
  * on <http://www.gnu.org/licenses/>.
 */
 
-#include <ros/ros.h>
+#include "rclcpp/rclcpp.hpp"
 
 #include "ig_active_reconstruction_ros/param_loader.hpp"
 #include "ig_active_reconstruction/views_simple_view_space_module.hpp"

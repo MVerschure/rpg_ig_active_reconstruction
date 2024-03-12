@@ -23,7 +23,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/chrono/include.hpp>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <ig_active_reconstruction/basic_view_planner.hpp>
 #include <ig_active_reconstruction/weighted_linear_utility.hpp>
 #include <ig_active_reconstruction/max_calls_termination_criteria.hpp>

@@ -79,7 +79,7 @@ namespace ig_active_reconstruction
       world_representation::CommunicationInterface::ViewIgResult information_gains;
       
       double cost_val = 0;
-      double ig_val = 0;
+      //double ig_val = 0;
       
       // cost
       if( robot_comm_unit_!=nullptr && cost_weight_!=0 )

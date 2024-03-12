@@ -67,7 +67,7 @@ namespace views
     if( viewspace_.deleteViews(view_ids) )
       return ViewSpaceUpdateResult::SUCCEEDED;
     else
-      ViewSpaceUpdateResult::FAILED;
+      return ViewSpaceUpdateResult::FAILED;
   }
   
   SimpleViewSpaceModule::ViewSpaceUpdateResult SimpleViewSpaceModule::deleteView( View::IdType view_id )
@@ -75,7 +75,7 @@ namespace views
     if( viewspace_.deleteView(view_id) )
       return ViewSpaceUpdateResult::SUCCEEDED;
     else
-      ViewSpaceUpdateResult::FAILED;
+      return ViewSpaceUpdateResult::FAILED;
   }
   
 }

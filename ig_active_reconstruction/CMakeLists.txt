@@ -3,10 +3,10 @@ project(ig_active_reconstruction)
 
 
 # Default to C++17
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+  add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
 find_package(ament_cmake REQUIRED)
@@ -36,7 +36,12 @@ target_link_libraries(${PROJECT_NAME}
    ${Boost_LIBRARIES}
 )
 
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
+#ament_export_libraries(${PROJECT_NAME})
 ament_export_dependencies(movements)
 ament_package()

@@ -106,8 +106,8 @@ private:
   std::vector<double> additional_fields_values_;
   bool is_reachable_; //! whether the view is reachable or not
   bool is_bad_; //! marks a bad view for whatever reason (e.g. data reception failed here or the like)
-  unsigned int visited_; //! how many times this view has been visited
   bool non_viewspace_; //! True if this view is not part of a viewspace.
+  unsigned int visited_; //! how many times this view has been visited
 };
 
 /*! Interface for robot specific information that is associated with a given view */

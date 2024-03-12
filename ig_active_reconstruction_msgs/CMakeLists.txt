@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(ig_active_reconstruction_msgs)
 
+set(CMAKE_CXX_STANDARD 17)
+
 find_package(ament_cmake REQUIRED) 
 #find_package(cmake_modules REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
@@ -32,6 +34,5 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   sensor_msgs
 )
 
-ament_export_dependencies(message_runtime)
 
 ament_package()

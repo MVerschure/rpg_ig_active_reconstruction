@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "ig_active_reconstruction_msgs/MovementCostMsg.h"
+#include "ig_active_reconstruction_msgs/msg/MovementCostMsg.hpp"
 
 #include "ig_active_reconstruction/robot_movement_cost.hpp"
 
