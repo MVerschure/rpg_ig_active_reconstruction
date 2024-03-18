@@ -10,16 +10,25 @@ find_package(ig_active_reconstruction_msgs REQUIRED)
 find_package(ig_active_reconstruction REQUIRED)
 find_package(movements REQUIRED)
 
+INCLUDE_DIRECTORIES ( "$ENV{EIGEN3_INCLUDE_DIR}" )
+
 
 file(GLOB ${PROJECT_NAME}_CODE_BASE
   "src/code_base/*.cpp"
 )
 
-
-add_library(${PROJECT_NAME} STATIC
+add_library(${PROJECT_NAME}
   ${${PROJECT_NAME}_CODE_BASE}
 )
+ament_target_dependencies(${PROJECT_NAME}
+  rclcpp
+  ig_active_reconstruction_msgs
+  ig_active_reconstruction
+)
 
+include_directories(include
+#  ig_active_reconstruction_msgs_INCLUDE_DIRS
+)
 
 # Executables...........................................................
 
@@ -29,14 +38,17 @@ add_executable(basic_view_planner
 )
 ament_target_dependencies(basic_view_planner
   rclcpp
+  ig_active_reconstruction_msgs
+  ig_active_reconstruction
 )
-
 add_executable(simple_viewspace_module
   src/ros_nodes/simple_viewspace_module.cpp
   ${${PROJECT_NAME}_CODE_BASE}
 )
 ament_target_dependencies(simple_viewspace_module
- rclcpp
+  rclcpp
+  ig_active_reconstruction_msgs
+  ig_active_reconstruction
 )
 
 ament_export_include_directories(include)

@@ -94,7 +94,7 @@ namespace octomap
   }
   
   TEMPT
-  void CSCOPE::setOctree( boost::shared_ptr<TREE_TYPE> octree )
+  void CSCOPE::setOctree( std::shared_ptr<TREE_TYPE> octree )
   {
     this->link_.octree = octree;
   }

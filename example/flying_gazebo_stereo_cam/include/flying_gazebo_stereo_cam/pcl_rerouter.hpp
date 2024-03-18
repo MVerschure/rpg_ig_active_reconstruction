@@ -15,15 +15,15 @@
  * on <http://www.gnu.org/licenses/>.
 */
 
-#include <ros/ros.h>
-#include <sensor_msgs/PointCloud2.h>
+#include <rclcpp/rclcpp.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
 
 namespace ros_tools
 {
   /*! Class that listens on a pcl topic and reroutes what it receives to another pcl topic or to a service.
    * Current implementation forwards single packages on demand.
    */
-  class PclRerouter
+  class PclRerouter : public rclcpp::Node
   {
   public:
     /*! Constructor.
@@ -31,14 +31,13 @@ namespace ros_tools
      * @param in_name Input name (Where pcl input is retrieved, relative to node namespace)
      * @param out_name How outputs (srv/topic) are advertised (relative to node namespace)
      */
-    PclRerouter( ros::NodeHandle nh, std::string in_name="in", std::string out_name="out" );
+    PclRerouter(const rclcpp::Node::SharedPtr node, const std::string& in_name = "in", const std::string& out_name = "out" );
     
     /*! Reroutes the next incoming pointcloud to the output.
      * @param max_wait_time Max wait time before rerouting is considered to have failed.
      * @return True if a data packet was rerouted.
      */
-    bool rerouteOneToTopic(ros::Duration max_wait_time = ros::Duration(1));
-    
+    bool rerouteOneToTopic(std::chrono::seconds max_wait_time = std::chrono::seconds(1));
     
     /*! Reroutes the next incoming pointcloud to the service.
      * @param max_wait_time Max wait time before rerouting is considered to have failed.
@@ -49,13 +48,14 @@ namespace ros_tools
   protected:
     /*! Called for incoming pointclouds.
      */
-    void pclCallback( const sensor_msgs::PointCloud2ConstPtr& msg );
+    void pclCallback( const sensor_msgs::msg::PointCloud2::SharedPtr msg );
     
   protected:
-    ros::NodeHandle nh_;
-    ros::Subscriber pcl_subscriber_;
-    ros::Publisher pcl_publisher_;
-    ros::ServiceClient pcl_service_caller_;
+    rclcpp::Node::SharedPtr node_;
+
+    rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr pcl_subscriber_;
+    rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr pcl_publisher_;
+    rclcpp::Client<sensor_msgs::srv::PointCloud2>::SharedPtr pcl_service_caller_;
     
     bool forward_one_;
     bool has_published_one_;

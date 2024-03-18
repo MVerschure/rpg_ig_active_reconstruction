@@ -43,7 +43,7 @@ public:
   RelativeMovement operator()( double _time );
   
   /** returns a pointer to the internally hold KinematicMovementDescriptionInstance */
-  boost::shared_ptr<KinematicMovementDescriptionInstance> operator->();
+  std::shared_ptr<KinematicMovementDescriptionInstance> operator->();
   
   /** returns a reference to the internally hold KinematicMovementDescriptionInstance */
   KinematicMovementDescriptionInstance& operator*();
@@ -70,7 +70,7 @@ public:
   template<class MovementT>
   CombinedKinematicMovementDescription operator+( MovementT const& _to_add );
 private:
-  boost::shared_ptr<KinematicMovementDescriptionInstance> enwrapped_kinematic_movement_description_;
+  std::shared_ptr<KinematicMovementDescriptionInstance> enwrapped_kinematic_movement_description_;
 };
 
 typedef KinematicMovementDescription KinMove;

@@ -27,126 +27,132 @@
 
 namespace ig_active_reconstruction
 {
-  
 namespace world_representation
 {
-  TEMPT
-  CSCOPE::RosServerCI( ros::NodeHandle nh, POINTER_TYPE<CommunicationInterface> linked_interface )
-  : nh_(nh)
+  
+template<template<typename> class POINTER_TYPE>
+class RosServerCI
+{
+public:
+  RosServerCI(rclcpp::Node::SharedPtr node, POINTER_TYPE<CommunicationInterface> linked_interface)
+  : node_(node)
   , linked_interface_(linked_interface)
   {
-    view_ig_computation_ = nh.advertiseService("world/information_gain", &CSCOPE::igComputationService, this );
-    map_metric_computation_ = nh.advertiseService("world/map_metric", &CSCOPE::mmComputationService, this );
-    available_ig_receiver_ = nh.advertiseService("world/ig_list", &CSCOPE::availableIgService, this );
-    available_mm_receiver_ = nh.advertiseService("world/mm_list", &CSCOPE::availableMmService, this );
+    view_ig_computation_ = node->create_service<ig_active_reconstruction_msgs::srv::InformationGainCalculation>(
+      "world/information_gain", std::bind(&RosServerCI::igComputationService, this, std::placeholders::_1, std::placeholders::_2));
+    map_metric_computation_ = node->create_service<ig_active_reconstruction_msgs::srv::MapMetricCalculation>(
+      "world/map_metric", std::bind(&RosServerCI::mmComputationService, this, std::placeholders::_1, std::placeholders::_2));
+    available_ig_receiver_ = node->create_service<ig_active_reconstruction_msgs::srv::StringList>(
+      "world/ig_list", std::bind(&RosServerCI::availableIgService, this, std::placeholders::_1, std::placeholders::_2));
+    available_mm_receiver_ = node->create_service<ig_active_reconstruction_msgs::srv::StringList>(
+      "world/mm_list", std::bind(&RosServerCI::availableMmService, this, std::placeholders::_1, std::placeholders::_2));
   }
   
-  TEMPT
-  typename CSCOPE::ResultInformation CSCOPE::computeViewIg(IgRetrievalCommand& command, ViewIgResult& output_ig)
+  typename ResultInformation computeViewIg(IgRetrievalCommand& command, ViewIgResult& output_ig)
   {
-    if( linked_interface_ == NULL )
-      throw std::runtime_error("world_representation::CSCOPE::Interface not linked.");
+    if (linked_interface_ == nullptr)
+      throw std::runtime_error("world_representation::RosServerCI::Interface not linked.");
     
     return linked_interface_->computeViewIg(command, output_ig);
   }
   
-  TEMPT
-  typename CSCOPE::ResultInformation CSCOPE::computeMapMetric(MapMetricRetrievalCommand& command, MapMetricRetrievalResultSet& output)
+  typename ResultInformation computeMapMetric(MapMetricRetrievalCommand& command, MapMetricRetrievalResultSet& output)
   {
-    if( linked_interface_ == NULL )
-      throw std::runtime_error("world_representation::CSCOPE::Interface not linked.");
+    if (linked_interface_ == nullptr)
+      throw std::runtime_error("world_representation::RosServerCI::Interface not linked.");
     
     return linked_interface_->computeMapMetric(command, output);
   }
   
-  TEMPT
-  void CSCOPE::availableIgMetrics( std::vector<MetricInfo>& available_ig_metrics )
+  void availableIgMetrics(std::vector<MetricInfo>& available_ig_metrics)
   {
-    if( linked_interface_ == NULL )
-      throw std::runtime_error("world_representation::CSCOPE::Interface not linked.");
+    if (linked_interface_ == nullptr)
+      throw std::runtime_error("world_representation::RosServerCI::Interface not linked.");
     
-    return linked_interface_->availableIgMetrics( available_ig_metrics );
+    linked_interface_->availableIgMetrics(available_ig_metrics);
   }
   
-  TEMPT
-  void CSCOPE::availableMapMetrics( std::vector<MetricInfo>& available_map_metrics )
+  void availableMapMetrics(std::vector<MetricInfo>& available_map_metrics)
   {
-    if( linked_interface_ == NULL )
-      throw std::runtime_error("world_representation::CSCOPE::Interface not linked.");
+    if (linked_interface_ == nullptr)
+      throw std::runtime_error("world_representation::RosServerCI::Interface not linked.");
     
-    return linked_interface_->availableMapMetrics( available_map_metrics );
+    linked_interface_->availableMapMetrics(available_map_metrics);
   }
   
-  TEMPT
-  bool CSCOPE::igComputationService( ig_active_reconstruction_msgs::InformationGainCalculation::Request& req, ig_active_reconstruction_msgs::InformationGainCalculation::Response& res )
+  bool igComputationService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::InformationGainCalculation::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::InformationGainCalculation::Response> response)
   {
-    ROS_INFO("Received 'ig computation' call.");
-    if( linked_interface_ == NULL )
+    RCLCPP_INFO(node_->get_logger("rclcpp"), "Received 'ig computation' call.");
+    
+    if (linked_interface_ == nullptr)
     {
       ig_active_reconstruction_msgs::InformationGain failed;
       failed.predicted_gain = 0;
       ResultInformation failed_status = ResultInformation::FAILED;
       failed.status = ros_conversions::resultInformationToMsg(failed_status);
-      unsigned int number_of_metrics = (!req.command.metric_ids.empty())?req.command.metric_ids.size():req.command.metric_names.size();
-      for(unsigned int i=0; i<number_of_metrics; ++i)
+      unsigned int number_of_metrics = (!request->command.metric_ids.empty()) ? request->command.metric_ids.size() : request->command.metric_names.size();
+      for (unsigned int i = 0; i < number_of_metrics; ++i)
       {
-	res.expected_information.push_back(failed);
+        response->expected_information.push_back(failed);
       }
       return true;
     }
     
     ViewIgResult result;
-    IgRetrievalCommand command = ros_conversions::igRetrievalCommandFromMsg(req.command);
-    linked_interface_->computeViewIg(command,result);
+    IgRetrievalCommand command = ros_conversions::igRetrievalCommandFromMsg(request->command);
+    linked_interface_->computeViewIg(command, result);
     
     BOOST_FOREACH(IgRetrievalResult& ig_res, result)
     {
-      res.expected_information.push_back( ros_conversions::igRetrievalResultToMsg(ig_res) );
+      response->expected_information.push_back(ros_conversions::igRetrievalResultToMsg(ig_res));
     }
     return true;
   }
   
-  TEMPT
-  bool CSCOPE::mmComputationService( ig_active_reconstruction_msgs::MapMetricCalculation::Request& req, ig_active_reconstruction_msgs::MapMetricCalculation::Response& res )
+  bool mmComputationService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::MapMetricCalculation::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::MapMetricCalculation::Response> response)
   {
-    ROS_INFO("Received 'map metric computation' call.");
-    if( linked_interface_ == NULL )
+    RCLCPP_INFO(node_->get_logger("rclcpp"), "Received 'map metric computation' call.");
+    
+    if (linked_interface_ == nullptr)
     {
       ig_active_reconstruction_msgs::InformationGain failed;
       failed.predicted_gain = 0;
       ResultInformation failed_status = ResultInformation::FAILED;
       failed.status = ros_conversions::resultInformationToMsg(failed_status);
-      unsigned int number_of_metrics = req.metric_names.size();
-      for(unsigned int i=0; i<number_of_metrics; ++i)
+      unsigned int number_of_metrics = request->metric_names.size();
+      for (unsigned int i = 0; i < number_of_metrics; ++i)
       {
-	res.results.push_back(failed);
+        response->results.push_back(failed);
       }
       return true;
     }
     
     MapMetricRetrievalResultSet result;
     MapMetricRetrievalCommand command;
-    BOOST_FOREACH(std::string& name, req.metric_names)
+    BOOST_FOREACH(std::string& name, request->metric_names)
     {
       command.metric_names.push_back(name);
     }
-    linked_interface_->computeMapMetric(command,result);
+    linked_interface_->computeMapMetric(command, result);
     
     BOOST_FOREACH(MapMetricRetrievalResult& ig_res, result)
     {
       ig_active_reconstruction_msgs::InformationGain gain;
       gain.predicted_gain = ig_res.value;
       gain.status = ros_conversions::resultInformationToMsg(ig_res.status);
-      res.results.push_back(gain);
+      response->results.push_back(gain);
     }
     return true;
   }
   
-  TEMPT
-  bool CSCOPE::availableIgService( ig_active_reconstruction_msgs::StringList::Request& req, ig_active_reconstruction_msgs::StringList::Response& res )
+  bool availableIgService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Response> response)
   {
-    ROS_INFO("Received 'available information gain metric' call.");
-    if( linked_interface_ == NULL )
+    RCLCPP_INFO(node_->get_logger("rclcpp"), "Received 'available information gain metric' call.");
+    
+    if (linked_interface_ == nullptr)
     {
       return true;
     }
@@ -156,17 +162,18 @@ namespace world_representation
     
     BOOST_FOREACH(MetricInfo& metric, metric_list)
     {
-      res.names.push_back(metric.name);
-      res.ids.push_back(metric.id);
+      response->names.push_back(metric.name);
+      response->ids.push_back(metric.id);
     }
     return true;
   }
   
-  TEMPT
-  bool CSCOPE::availableMmService( ig_active_reconstruction_msgs::StringList::Request& req, ig_active_reconstruction_msgs::StringList::Response& res )
+  bool availableMmService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Response> response)
   {
-    ROS_INFO("Received 'available map metric' call.");
-    if( linked_interface_ == NULL )
+    RCLCPP_INFO(node_->get_logger("rclcpp"), "Received 'available map metric' call.");
+    
+    if (linked_interface_ == nullptr)
     {
       return true;
     }
@@ -176,8 +183,8 @@ namespace world_representation
     
     BOOST_FOREACH(MetricInfo& metric, metric_list)
     {
-      res.names.push_back(metric.name);
-      res.ids.push_back(metric.id);
+      response->names.push_back(metric.name);
+      response->ids.push_back(metric.id);
     }
     return true;
   }

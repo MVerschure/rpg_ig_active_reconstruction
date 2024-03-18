@@ -19,11 +19,11 @@
 
 #if 0
 
-#include "ig_active_reconstruction_msgs/MovementCostMsg.h"
-#include "ig_active_reconstruction_msgs/ViewMsg.h"
-#include "ig_active_reconstruction_msgs/InformationGainRetrievalCommand.h"
-#include "ig_active_reconstruction_msgs/ViewSpaceMsg.h"
-#include "ig_active_reconstruction_msgs/InformationGain.h"
+#include "ig_active_reconstruction_msgs/msg/movement_cost_msg.hpp"
+#include "ig_active_reconstruction_msgs/msg/view_msg.hpp"
+#include "ig_active_reconstruction_msgs/msg/information_gain_retrieval_command.hpp"
+#include "ig_active_reconstruction_msgs/msg/view_space_msg.hpp"
+#include "ig_active_reconstruction_msgs/msg/information_gain.hpp"
 
 #include "ig_active_reconstruction/robot_movement_cost.hpp"
 #include "ig_active_reconstruction/view.hpp"
@@ -42,28 +42,28 @@ namespace ros_conversions
     /*! Converts movement cost object to a ros cost message
      * @param cost Cost object from which a cost message shall be created.
     */
-    ig_active_reconstruction_msgs::MovementCostMsg movementCostToMsg( const robot::MovementCost& cost );
+    ig_active_reconstruction_msgs::msg::MovementCostMsg movementCostToMsg( const robot::MovementCost& cost );
   
   
     /*!
     * loads from msg
     */
-    robot::MovementCost movementCostFromMsg( ig_active_reconstruction_msgs::MovementCostMsg& _msg );
+    robot::MovementCost movementCostFromMsg( ig_active_reconstruction_msgs::msg::MovementCostMsg& _msg );
   
     /*! Converts a view to a view message.
       */
-    ig_active_reconstruction_msgs::ViewMsg viewToMsg( views::View& view );
+    ig_active_reconstruction_msgs::msg::ViewMsg viewToMsg( views::View& view );
 
     /*! Constructs a new view from a view message.
       */
-    views::View viewFromMsg( ig_active_reconstruction_msgs::ViewMsg& msg );
+    views::View viewFromMsg( ig_active_reconstruction_msgs::msg::ViewMsg& msg );
     
     /** Creates a view space msg with the content of the view space
     */
-    ig_active_reconstruction_msgs::ViewSpaceMsg viewSpaceToMsg( views::ViewSpace& view_space );
+    ig_active_reconstruction_msgs::msg::ViewSpaceMsg viewSpaceToMsg( views::ViewSpace& view_space );
     
     /** Construct view space from message */
-    views::ViewSpace viewSpaceFromMsg( ig_active_reconstruction_msgs::ViewSpaceMsg& msg );
+    views::ViewSpace viewSpaceFromMsg( ig_active_reconstruction_msgs::msg::ViewSpaceMsg& msg );
     
     robot::CommunicationInterface::ReceptionInfo robotReceptionInfoFromMsg( int& receive_info );
     
@@ -75,14 +75,14 @@ namespace ros_conversions
     views::CommunicationInterface::ViewSpaceUpdateResult viewSpaceUpdateResultFromMsg(int& msg);
     int viewSpaceUpdateResultToMsg(views::CommunicationInterface::ViewSpaceUpdateResult& res);
     
-    world_representation::CommunicationInterface::IgRetrievalConfig igRetrievalConfigFromMsg(ig_active_reconstruction_msgs::InformationGainRetrievalConfig& config);
-    ig_active_reconstruction_msgs::InformationGainRetrievalConfig igRetrievalConfigToMsg(world_representation::CommunicationInterface::IgRetrievalConfig& config);
-    world_representation::CommunicationInterface::IgRetrievalCommand igRetrievalCommandFromMsg(ig_active_reconstruction_msgs::InformationGainRetrievalCommand& command_msg);
-    ig_active_reconstruction_msgs::InformationGainRetrievalCommand igRetrievalCommandToMsg(world_representation::CommunicationInterface::IgRetrievalCommand& command);
+    world_representation::CommunicationInterface::IgRetrievalConfig igRetrievalConfigFromMsg(ig_active_reconstruction_msgs::msg::InformationGainRetrievalConfig& config);
+    ig_active_reconstruction_msgs::msg::InformationGainRetrievalConfig igRetrievalConfigToMsg(world_representation::CommunicationInterface::IgRetrievalConfig& config);
+    world_representation::CommunicationInterface::IgRetrievalCommand igRetrievalCommandFromMsg(ig_active_reconstruction_msgs::msg::InformationGainRetrievalCommand& command_msg);
+    ig_active_reconstruction_msgs::msg::InformationGainRetrievalCommand igRetrievalCommandToMsg(world_representation::CommunicationInterface::IgRetrievalCommand& command);
     world_representation::CommunicationInterface::ResultInformation resultInformationFromMsg(int& msg);
     int resultInformationToMsg(world_representation::CommunicationInterface::ResultInformation& msg);
-    world_representation::CommunicationInterface::IgRetrievalResult igRetrievalResultFromMsg(ig_active_reconstruction_msgs::InformationGain& msg);
-    ig_active_reconstruction_msgs::InformationGain igRetrievalResultToMsg(world_representation::CommunicationInterface::IgRetrievalResult& msg);
+    world_representation::CommunicationInterface::IgRetrievalResult igRetrievalResultFromMsg(ig_active_reconstruction_msgs::msg::InformationGain& msg);
+    ig_active_reconstruction_msgs::msg::InformationGain igRetrievalResultToMsg(world_representation::CommunicationInterface::IgRetrievalResult& msg);
 }
 
 }

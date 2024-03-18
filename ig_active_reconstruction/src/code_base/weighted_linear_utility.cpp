@@ -47,17 +47,17 @@ namespace ig_active_reconstruction
     ig_retrieval_config_ = config;
   }
   
-  void WeightedLinearUtility::setWorldCommUnit( boost::shared_ptr<world_representation::CommunicationInterface> world_comm_unit )
+  void WeightedLinearUtility::setWorldCommUnit( std::shared_ptr<world_representation::CommunicationInterface> world_comm_unit )
   {
     world_comm_unit_ = world_comm_unit;
   }
   
-  void WeightedLinearUtility::setRobotCommUnit( boost::shared_ptr<robot::CommunicationInterface> robot_comm_unit )
+  void WeightedLinearUtility::setRobotCommUnit( std::shared_ptr<robot::CommunicationInterface> robot_comm_unit )
   {
     robot_comm_unit_ = robot_comm_unit;
   }
   
-  views::View::IdType WeightedLinearUtility::getNbv( views::ViewSpace::IdSet& id_set, boost::shared_ptr<views::ViewSpace> viewspace )
+  views::View::IdType WeightedLinearUtility::getNbv( views::ViewSpace::IdSet& id_set, std::shared_ptr<views::ViewSpace> viewspace )
   {
     // structure to store received values
     std::vector<double> cost_vector;
@@ -159,7 +159,7 @@ namespace ig_active_reconstruction
     return nbv;
   }
   
-  void WeightedLinearUtility::getIg(std::vector<double>& ig_vector,double& total_ig, world_representation::CommunicationInterface::IgRetrievalCommand command, views::ViewSpace::IdSet& id_set, boost::shared_ptr<views::ViewSpace> viewspace, unsigned int base_index, unsigned int batch_size )
+  void WeightedLinearUtility::getIg(std::vector<double>& ig_vector,double& total_ig, world_representation::CommunicationInterface::IgRetrievalCommand command, views::ViewSpace::IdSet& id_set, std::shared_ptr<views::ViewSpace> viewspace, unsigned int base_index, unsigned int batch_size )
   {
     
     // information gain

@@ -52,17 +52,17 @@ namespace ig_active_reconstruction
     
     /*! Sets the world representation communication interface with which the utility function corresponds.
      */
-    virtual void setWorldCommUnit( boost::shared_ptr<world_representation::CommunicationInterface> world_comm_unit );
+    virtual void setWorldCommUnit( std::shared_ptr<world_representation::CommunicationInterface> world_comm_unit );
     
     /*! Sets the robot communication interface with which the utility function corresponds.
      */
-    virtual void setRobotCommUnit( boost::shared_ptr<robot::CommunicationInterface> robot_comm_unit );
+    virtual void setRobotCommUnit( std::shared_ptr<robot::CommunicationInterface> robot_comm_unit );
     
     /*! Returns the view id of the best view within the given subset of the viewspace.
      * @param id_set Id-subset of views that shall be considered.
      * @param viewspace The complete viewspace object
      */
-    virtual views::View::IdType getNbv( views::ViewSpace::IdSet& id_set, boost::shared_ptr<views::ViewSpace> viewspace );  
+    virtual views::View::IdType getNbv( views::ViewSpace::IdSet& id_set, std::shared_ptr<views::ViewSpace> viewspace );  
     
   protected:
     /*! Helper function for multithreaded ig retrieval.
@@ -74,11 +74,11 @@ namespace ig_active_reconstruction
      * @param base_index Which entry within the batch is processed by this function [0-(batch_size-1)]. All id's are separated into batches of size batch_size. This function will process every base_index-th of it. E.g. batch_size = 3, base_index=2: The function will process the 2th, 5th, 8th, 11th, etc entry...
      * @param batch_size Size of the batch, matches the number of spawned threads.
      */
-    void getIg(std::vector<double>& ig_vector, double& total_ig, world_representation::CommunicationInterface::IgRetrievalCommand command, views::ViewSpace::IdSet& id_set, boost::shared_ptr<views::ViewSpace> viewspace, unsigned int base_index, unsigned int batch_size );
+    void getIg(std::vector<double>& ig_vector, double& total_ig, world_representation::CommunicationInterface::IgRetrievalCommand command, views::ViewSpace::IdSet& id_set, std::shared_ptr<views::ViewSpace> viewspace, unsigned int base_index, unsigned int batch_size );
     
   protected:
-    boost::shared_ptr<world_representation::CommunicationInterface> world_comm_unit_; //! Interface to world representation.
-    boost::shared_ptr<robot::CommunicationInterface> robot_comm_unit_; //! Interface to robot.
+    std::shared_ptr<world_representation::CommunicationInterface> world_comm_unit_; //! Interface to world representation.
+    std::shared_ptr<robot::CommunicationInterface> robot_comm_unit_; //! Interface to robot.
     
     world_representation::CommunicationInterface::IgRetrievalConfig ig_retrieval_config_; //! Will be used for ig retrieval.
     

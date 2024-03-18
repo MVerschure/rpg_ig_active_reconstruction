@@ -24,7 +24,7 @@ namespace movements
 
 RelativeMovement::RelativeMovement( RelativeMovementInstance* _to_enwrap )
 {
-  enwrapped_relative_movement_ = boost::shared_ptr<RelativeMovementInstance>( _to_enwrap );
+  enwrapped_relative_movement_ = std::shared_ptr<RelativeMovementInstance>( _to_enwrap );
 }
 
 std::string RelativeMovement::type()
@@ -37,7 +37,7 @@ movements::Pose RelativeMovement::applyToBasePose( movements::Pose& _base )
   return enwrapped_relative_movement_->applyToBasePose(_base);
 }
 
-boost::shared_ptr<RelativeMovement::RelativeMovementInstance> RelativeMovement::operator*()
+std::shared_ptr<RelativeMovement::RelativeMovementInstance> RelativeMovement::operator*()
 {
   return enwrapped_relative_movement_;
 }

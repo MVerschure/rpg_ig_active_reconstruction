@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include "ig_active_reconstruction_msgs/msg/MovementCostMsg.hpp"
+#include "ig_active_reconstruction_msgs/msg/movement_cost_msg.hpp"
 
 #include "ig_active_reconstruction/robot_movement_cost.hpp"
 
@@ -32,12 +32,12 @@ namespace ros_conversions
     /*! Converts movement cost object to a ros cost message
      * @param cost Cost object from which a cost message shall be created.
     */
-    ig_active_reconstruction_msgs::MovementCostMsg movementCostToMsg( const robot::MovementCost& cost );
+    ig_active_reconstruction_msgs::msg::MovementCostMsg movementCostToMsg( const robot::MovementCost& cost );
   
     /*!
     * loads from msg
     */
-    robot::MovementCost movementCostFromMsg( ig_active_reconstruction_msgs::MovementCostMsg& _msg );
+    robot::MovementCost movementCostFromMsg( ig_active_reconstruction_msgs::msg::MovementCostMsg& _msg );
     
     robot::CommunicationInterface::ReceptionInfo robotReceptionInfoFromMsg( int& receive_info );
     

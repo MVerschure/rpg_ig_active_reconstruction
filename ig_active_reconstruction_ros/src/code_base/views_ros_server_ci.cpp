@@ -17,127 +17,131 @@
 
 #include <stdexcept>
 
+#include "ig_active_reconstruction/views_communication_interface.hpp"
 #include "ig_active_reconstruction_ros/views_ros_server_ci.hpp"
 #include "ig_active_reconstruction_ros/views_conversions.hpp"
 
-
 namespace ig_active_reconstruction
 {
-  
 namespace views
 {
-  
-  RosServerCI::RosServerCI( ros::NodeHandle nh, boost::shared_ptr<CommunicationInterface> linked_interface )
-  : nh_(nh)
+  RosServerCI::RosServerCI(rclcpp::Node::SharedPtr node, std::shared_ptr<CommunicationInterface> linked_interface)
+  : node_(node)
   , linked_interface_(linked_interface)
   {
-    viewspace_service_ = nh.advertiseService("views/space", &RosServerCI::viewspaceService, this );
-    views_adder_service_ = nh.advertiseService("views/add", &RosServerCI::viewsAdderService, this );
-    views_deleter_service_ = nh.advertiseService("views/delete", &RosServerCI::viewsDeleterService, this );
-  }
+    viewspace_service_ = node_->create_service<ig_active_reconstruction_msgs::srv::ViewSpaceRequest>("views/space",
+      std::bind(&RosServerCI::viewspaceService, this, std::placeholders::_1, std::placeholders::_2));
     
+    views_adder_service_ = node_->create_service<ig_active_reconstruction_msgs::srv::ViewSpaceUpdate>("views/add",
+      std::bind(&RosServerCI::viewsAdderService, this, std::placeholders::_1, std::placeholders::_2));
+    
+    views_deleter_service_ = node_->create_service<ig_active_reconstruction_msgs::srv::DeleteViews>("views/delete",
+      std::bind(&RosServerCI::viewsDeleterService, this, std::placeholders::_1, std::placeholders::_2));
+  }
+
   const ViewSpace& RosServerCI::getViewSpace()
   {
-    if( linked_interface_ == nullptr )
+    if (linked_interface_ == nullptr)
       throw std::runtime_error("views::RosServerCI::Interface not linked.");
-    
+
     return linked_interface_->getViewSpace();
   }
-  
-  RosServerCI::ViewSpaceUpdateResult RosServerCI::addViews( std::vector<View>& new_views )
+
+  RosServerCI::ViewSpaceUpdateResult RosServerCI::addViews(std::vector<View>& new_views)
   {
-    if( linked_interface_ == nullptr )
+    if (linked_interface_ == nullptr)
       throw std::runtime_error("views::RosServerCI::Interface not linked.");
-    
+
     return linked_interface_->addViews(new_views);
   }
-  
-  RosServerCI::ViewSpaceUpdateResult RosServerCI::addView( View new_view )
+
+  RosServerCI::ViewSpaceUpdateResult RosServerCI::addView(View new_view)
   {
-    if( linked_interface_ == nullptr )
+    if (linked_interface_ == nullptr)
       throw std::runtime_error("views::RosServerCI::Interface not linked.");
-    
+
     return linked_interface_->addView(new_view);
   }
-  
-  RosServerCI::ViewSpaceUpdateResult RosServerCI::deleteViews( std::vector<View::IdType>& view_ids )
+
+  RosServerCI::ViewSpaceUpdateResult RosServerCI::deleteViews(std::vector<View::IdType>& view_ids)
   {
-    if( linked_interface_ == nullptr )
+    if (linked_interface_ == nullptr)
       throw std::runtime_error("views::RosServerCI::Interface not linked.");
-    
+
     return linked_interface_->deleteViews(view_ids);
   }
-  
-  RosServerCI::ViewSpaceUpdateResult RosServerCI::deleteView( View::IdType view_id )
+
+  RosServerCI::ViewSpaceUpdateResult RosServerCI::deleteView(View::IdType view_id)
   {
-    if( linked_interface_ == nullptr )
+    if (linked_interface_ == nullptr)
       throw std::runtime_error("views::RosServerCI::Interface not linked.");
-    
+
     return linked_interface_->deleteView(view_id);
   }
-  
-  bool RosServerCI::viewspaceService( ig_active_reconstruction_msgs::ViewSpaceRequest::Request& req, ig_active_reconstruction_msgs::ViewSpaceRequest::Response& res )
+
+  bool RosServerCI::viewspaceService(
+    const std::shared_ptr<ig_active_reconstruction_msgs::srv::ViewSpaceRequest::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::ViewSpaceRequest::Response> response)
   {
-    ROS_INFO("Received 'viewspace' call.");
-    if( linked_interface_ == nullptr )
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received 'viewspace' call.");
+    if (linked_interface_ == nullptr)
     {
       ViewSpaceStatus status = ViewSpaceStatus::BAD;
-      res.viewspace_status = ros_conversions::viewSpaceStatusToMsg(status);
+      response->viewspace_status = ros_conversions::viewSpaceStatusToMsg(status);
       return true;
     }
-    
+
     const ViewSpace& viewspace = linked_interface_->getViewSpace();
-    
-    res.viewspace = ros_conversions::viewSpaceToMsg(viewspace);
-    
+    response->viewspace = ros_conversions::viewSpaceToMsg(viewspace);
     ViewSpaceStatus status = ViewSpaceStatus::OK;
-    res.viewspace_status = ros_conversions::viewSpaceStatusToMsg(status);
-    
+    response->viewspace_status = ros_conversions::viewSpaceStatusToMsg(status);
     return true;
   }
-  
-  bool RosServerCI::viewsAdderService( ig_active_reconstruction_msgs::ViewSpaceUpdate::Request& req, ig_active_reconstruction_msgs::ViewSpaceUpdate::Response& res )
+
+  bool RosServerCI::viewsAdderService(
+    const std::shared_ptr<ig_active_reconstruction_msgs::srv::ViewSpaceUpdate::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::ViewSpaceUpdate::Response> response)
   {
-    ROS_INFO("Received 'add view(s)' call.");
-    if( linked_interface_ == nullptr )
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received 'add view(s)' call.");
+    if (linked_interface_ == nullptr)
     {
-      ViewSpaceUpdateResult result = ViewSpaceUpdateResult::NOT_AVAILABLE;
-      res.update_result = ros_conversions::viewSpaceUpdateResultToMsg(result);
-      return true;
+      RosServerCI::ViewSpaceUpdateResult result = RosServerCI::ViewSpaceUpdateResult::NOT_AVAILABLE;
+      response->update_result = ros_conversions::viewSpaceUpdateResultToMsg(result);
+      return false;
     }
-    
+
     std::vector<View> new_views;
-    for(ig_active_reconstruction_msgs::ViewMsg& view_msg: req.views)
+    for (auto& view_msg : request->views)
     {
-      new_views.push_back( ros_conversions::viewFromMsg(view_msg) );
+      new_views.push_back(ros_conversions::viewFromMsg(view_msg));
     }
-    ViewSpaceUpdateResult result = linked_interface_->addViews(new_views);
-    
-    res.update_result = ros_conversions::viewSpaceUpdateResultToMsg(result);
+    RosServerCI::ViewSpaceUpdateResult result = linked_interface_->addViews(new_views);
+
+    response->update_result = ros_conversions::viewSpaceUpdateResultToMsg(result);
     return true;
   }
-  
-  bool RosServerCI::viewsDeleterService( ig_active_reconstruction_msgs::DeleteViews::Request& req, ig_active_reconstruction_msgs::DeleteViews::Response& res )
+
+  bool RosServerCI::viewsDeleterService(
+    const std::shared_ptr<ig_active_reconstruction_msgs::srv::DeleteViews::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::DeleteViews::Response> response)
   {
-    ROS_INFO("Received 'delete view(s)' call.");
-    if( linked_interface_ == nullptr )
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received 'delete view(s)' call.");
+    if (linked_interface_ == nullptr)
     {
-      ViewSpaceUpdateResult result = ViewSpaceUpdateResult::NOT_AVAILABLE;
-      res.update_result = ros_conversions::viewSpaceUpdateResultToMsg(result);
-      return true;
+      RosServerCI::ViewSpaceUpdateResult result = RosServerCI::ViewSpaceUpdateResult::NOT_AVAILABLE;
+      
+      response->update_result = ros_conversions::viewSpaceUpdateResultToMsg(result);
+      return false;
     }
-    
+
     std::vector<View::IdType> delete_ids;
-    for(uint64_t& id:req.ids)
+    for (auto& id : request->ids)
     {
       delete_ids.push_back(id);
     }
-    ViewSpaceUpdateResult result = linked_interface_->deleteViews(delete_ids);
-    res.update_result = ros_conversions::viewSpaceUpdateResultToMsg(result);
-    
+    RosServerCI::ViewSpaceUpdateResult result = linked_interface_->deleteViews(delete_ids);
+    response->update_result = ros_conversions::viewSpaceUpdateResultToMsg(result);
     return true;
   }
-  
 }
-
 }

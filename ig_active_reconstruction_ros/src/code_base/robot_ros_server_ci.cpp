@@ -16,27 +16,27 @@
 */
 
 #include <stdexcept>
-
 #include "ig_active_reconstruction_ros/robot_ros_server_ci.hpp"
 #include "ig_active_reconstruction_ros/robot_conversions.hpp"
 #include "ig_active_reconstruction_ros/views_conversions.hpp"
 
-
-
 namespace ig_active_reconstruction
 {
-  
 namespace robot
 {
   
-  RosServerCI::RosServerCI( ros::NodeHandle nh, boost::shared_ptr<CommunicationInterface> linked_interface )
-  : nh_(nh)
+  RosServerCI::RosServerCI( rclcpp::Node::SharedPtr node, std::shared_ptr<CommunicationInterface> linked_interface )
+  : node_(node)
   , linked_interface_(linked_interface)
   {
-    current_view_service_ = nh_.advertiseService("robot/current_view", &RosServerCI::currentViewService, this );
-    data_service_ = nh_.advertiseService("robot/retrieve_data", &RosServerCI::retrieveDataService, this );
-    cost_service_ = nh_.advertiseService("robot/movement_cost", &RosServerCI::movementCostService, this );
-    robot_moving_service_ = nh_.advertiseService("robot/move_to", &RosServerCI::moveToService, this );
+    current_view_service_ = node_->create_service<ig_active_reconstruction_msgs::srv::ViewRequest>("robot/current_view",
+      std::bind(&RosServerCI::currentViewService, this, std::placeholders::_1, std::placeholders::_2));
+    data_service_ = node_->create_service<ig_active_reconstruction_msgs::srv::RetrieveData>("robot/retrieve_data",
+      std::bind(&RosServerCI::retrieveDataService, this, std::placeholders::_1, std::placeholders::_2));
+    cost_service_ = node_->create_service<ig_active_reconstruction_msgs::srv::MovementCostCalculation>("robot/movement_cost",
+      std::bind(&RosServerCI::movementCostService, this, std::placeholders::_1, std::placeholders::_2));
+    robot_moving_service_ = node_->create_service<ig_active_reconstruction_msgs::srv::MoveToOrder>("robot/move_to",
+      std::bind(&RosServerCI::moveToService, this, std::placeholders::_1, std::placeholders::_2));
   }
   
   views::View RosServerCI::getCurrentView()
@@ -60,15 +60,15 @@ namespace robot
     if( linked_interface_ == nullptr )
       throw std::runtime_error("robot::RosServerCI::Interface not linked.");
     
-    return linked_interface_->movementCost( target_view );
+    return linked_interface_->movementCost(target_view);
   }
   
-  MovementCost RosServerCI::movementCost( views::View& start_view, views::View& target_view, bool fill_additional_information  )
+  MovementCost RosServerCI::movementCost( views::View& start_view, views::View& target_view, bool fill_additional_information )
   {
     if( linked_interface_ == nullptr )
       throw std::runtime_error("robot::RosServerCI::Interface not linked.");
     
-    return linked_interface_->movementCost( start_view, target_view, fill_additional_information  );
+    return linked_interface_->movementCost(start_view, target_view, fill_additional_information);
   }
   
   bool RosServerCI::moveTo( views::View& target_view )
@@ -76,43 +76,47 @@ namespace robot
     if( linked_interface_ == nullptr )
       throw std::runtime_error("robot::RosServerCI::Interface not linked.");
     
-    return linked_interface_->moveTo( target_view );
+    return linked_interface_->moveTo(target_view);
   }
   
-  bool RosServerCI::currentViewService( ig_active_reconstruction_msgs::ViewRequest::Request& req, ig_active_reconstruction_msgs::ViewRequest::Response& res )
+  bool RosServerCI::currentViewService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::ViewRequest::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::ViewRequest::Response> response)
   {
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received current view call.");
     
-    ROS_INFO("Received current view call.");
     if( linked_interface_ == nullptr )
     {
       return false;
     }
     
     views::View current_view = linked_interface_->getCurrentView();
-    res.view = ros_conversions::viewToMsg(current_view);
+    response->view = ros_conversions::viewToMsg(current_view);
     
     return true;
   }
   
-  bool RosServerCI::retrieveDataService( ig_active_reconstruction_msgs::RetrieveData::Request& req, ig_active_reconstruction_msgs::RetrieveData::Response& res )
+  bool RosServerCI::retrieveDataService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::RetrieveData::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::RetrieveData::Response> response)
   {
-    ROS_INFO("Received 'retrieve data' call.");
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received 'retrieve data' call.");
+    
     if( linked_interface_ == nullptr )
     {
       ReceptionInfo inf = ReceptionInfo::FAILED;
-      res.receive_info = ros_conversions::robotReceptionInfoToMsg(inf);
+      response->receive_info = ros_conversions::robotReceptionInfoToMsg(inf);
       return true;
     }
     
     ReceptionInfo rec_info = linked_interface_->retrieveData();
     
-    res.receive_info = ros_conversions::robotReceptionInfoToMsg(rec_info);
+    response->receive_info = ros_conversions::robotReceptionInfoToMsg(rec_info);
     return true;
   }
   
-  bool RosServerCI::movementCostService( ig_active_reconstruction_msgs::MovementCostCalculation::Request& req, ig_active_reconstruction_msgs::MovementCostCalculation::Response& res )
+  bool RosServerCI::movementCostService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::MovementCostCalculation::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::MovementCostCalculation::Response> response)
   {
-    ROS_INFO("Received 'movement cost' call.");
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received 'movement cost' call.");
     MovementCost cost;
     
     if( linked_interface_ == nullptr )
@@ -121,33 +125,34 @@ namespace robot
     }
     else
     {
-      views::View start_view = ros_conversions::viewFromMsg(req.start_view);
-      views::View target_view = ros_conversions::viewFromMsg(req.target_view);
-      bool fill_additional_info = req.additional_information;
+      views::View start_view = ros_conversions::viewFromMsg(request->start_view);
+      views::View target_view = ros_conversions::viewFromMsg(request->target_view);
+      bool fill_additional_info = request->additional_information;
       
-      cost = linked_interface_->movementCost( start_view, target_view, fill_additional_info );
+      cost = linked_interface_->movementCost(start_view, target_view, fill_additional_info);
     }
     
-    res.movement_cost = ros_conversions::movementCostToMsg(cost);
+    response->movement_cost = ros_conversions::movementCostToMsg(cost);
     return true;
   }
   
-  bool RosServerCI::moveToService( ig_active_reconstruction_msgs::MoveToOrder::Request& req, ig_active_reconstruction_msgs::MoveToOrder::Response& res )
+  bool RosServerCI::moveToService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::MoveToOrder::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::MoveToOrder::Response> response)
   {
-    ROS_INFO("Received 'move to position' call.");
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received 'move to position' call.");
+    
     if( linked_interface_ == nullptr )
     {
-      res.success = false;
+      response->success = false;
       return true;
     }
     
-    views::View target_view  = ros_conversions::viewFromMsg(req.target_view);
+    views::View target_view = ros_conversions::viewFromMsg(request->target_view);
     
     bool success = linked_interface_->moveTo(target_view);
     
-    res.success = success;
+    response->success = success;
     return true;
   }
 }
-
 }

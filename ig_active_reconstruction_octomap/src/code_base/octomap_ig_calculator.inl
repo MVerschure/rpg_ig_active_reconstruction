@@ -35,10 +35,10 @@ namespace octomap
   {
     // gcc has a bug when capturing variadic arguments... need to use workaround...
     
-    boost::shared_ptr< InformationGain<TREE_TYPE> > prototype = boost::make_shared< IG_METRIC_TYPE<TREE_TYPE> >(args...);
+    std::shared_ptr< InformationGain<TREE_TYPE> > prototype = std::make_shared< IG_METRIC_TYPE<TREE_TYPE> >(args...);
     std::string name = prototype->type();
     
-    std::function< boost::shared_ptr< InformationGain<TREE_TYPE> >() > creator = std::bind(boost::make_shared< IG_METRIC_TYPE<TREE_TYPE> >,args...);
+    std::function< std::shared_ptr< InformationGain<TREE_TYPE> >() > creator = std::bind(std::make_shared< IG_METRIC_TYPE<TREE_TYPE> >,args...);
     
     return ig_factory_.add(name,creator);
   }*/
@@ -47,10 +47,10 @@ namespace octomap
   template<template<typename> class IG_METRIC_TYPE>
   unsigned int CSCOPE::registerInformationGain( typename IG_METRIC_TYPE<TREE_TYPE>::Utils::Config utils )
   {
-    boost::shared_ptr< InformationGain<TREE_TYPE> > prototype = boost::make_shared< IG_METRIC_TYPE<TREE_TYPE> >(utils);
+    std::shared_ptr< InformationGain<TREE_TYPE> > prototype = std::make_shared< IG_METRIC_TYPE<TREE_TYPE> >(utils);
     std::string name = prototype->type();
     
-    boost::function< boost::shared_ptr< InformationGain<TREE_TYPE> >() > creator;    
+    boost::function< std::shared_ptr< InformationGain<TREE_TYPE> >() > creator;    
     creator = boost::bind(&IgCalculator<TREE_TYPE>::makeShared<IG_METRIC_TYPE>, this, utils);
     
     return ig_factory_.add(name,creator);
@@ -58,9 +58,9 @@ namespace octomap
   
   TEMPT
   template<template<typename> class IG_METRIC_TYPE>
-  boost::shared_ptr< InformationGain<TREE_TYPE> > CSCOPE::makeShared(typename IG_METRIC_TYPE<TREE_TYPE>::Utils::Config utils)
+  std::shared_ptr< InformationGain<TREE_TYPE> > CSCOPE::makeShared(typename IG_METRIC_TYPE<TREE_TYPE>::Utils::Config utils)
   {
-    return boost::shared_ptr< InformationGain<TREE_TYPE> >( new IG_METRIC_TYPE<TREE_TYPE>(utils) );
+    return std::shared_ptr< InformationGain<TREE_TYPE> >( new IG_METRIC_TYPE<TREE_TYPE>(utils) );
   }
   
 }

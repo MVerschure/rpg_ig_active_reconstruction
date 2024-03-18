@@ -18,12 +18,12 @@
 #pragma once
 
 
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include "ig_active_reconstruction/world_representation_communication_interface.hpp"
 
-#include "ig_active_reconstruction_msgs/InformationGainCalculation.h"
-#include "ig_active_reconstruction_msgs/MapMetricCalculation.h"
-#include "ig_active_reconstruction_msgs/StringList.h"
+#include "ig_active_reconstruction_msgs/srv/information_gain_calculation.hpp"
+#include "ig_active_reconstruction_msgs/srv/map_metric_calculation.hpp"
+#include "ig_active_reconstruction_msgs/srv/string_list.hpp"
 
 namespace ig_active_reconstruction
 {
@@ -41,7 +41,7 @@ namespace world_representation
      * @param nh ROS node handle defines the namespace in which ROS communication will be carried out.
      * @param linked_interface (optional) directly add the interface that is linked internally (to which requests are forwarded.
      */
-    RosServerCI( ros::NodeHandle nh, POINTER_TYPE<CommunicationInterface> linked_interface = NULL );
+    RosServerCI( rclcpp::Node::SharedPtr nh, POINTER_TYPE<CommunicationInterface> linked_interface = nullptr );
     
     virtual ~RosServerCI(){};
     
@@ -67,20 +67,20 @@ namespace world_representation
     virtual void availableMapMetrics( std::vector<MetricInfo>& available_map_metrics );
     
   protected:
-    bool igComputationService( ig_active_reconstruction_msgs::InformationGainCalculation::Request& req, ig_active_reconstruction_msgs::InformationGainCalculation::Response& res );
-    bool mmComputationService( ig_active_reconstruction_msgs::MapMetricCalculation::Request& req, ig_active_reconstruction_msgs::MapMetricCalculation::Response& res );
-    bool availableIgService( ig_active_reconstruction_msgs::StringList::Request& req, ig_active_reconstruction_msgs::StringList::Response& res );
-    bool availableMmService( ig_active_reconstruction_msgs::StringList::Request& req, ig_active_reconstruction_msgs::StringList::Response& res );
+    bool igComputationService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<ig_active_reconstruction_msgs::srv::InformationGainCalculation::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::InformationGainCalculation::Response> res );
+    bool mmComputationService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<ig_active_reconstruction_msgs::srv::MapMetricCalculation::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::MapMetricCalculation::Response> res );
+    bool availableIgService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Response> res );
+    bool availableMmService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Response> res );
     
   protected:
-    ros::NodeHandle nh_;
+    rclcpp::Node::SharedPtr nh_;
     
     POINTER_TYPE<CommunicationInterface> linked_interface_; //! Linked interface.
     
-    ros::ServiceServer view_ig_computation_;
-    ros::ServiceServer map_metric_computation_;
-    ros::ServiceServer available_ig_receiver_;
-    ros::ServiceServer available_mm_receiver_;
+    rclcpp::Service<ig_active_reconstruction_msgs::srv::InformationGainCalculation>::SharedPtr view_ig_computation_;
+    rclcpp::Service<ig_active_reconstruction_msgs::srv::MapMetricCalculation>::SharedPtr map_metric_computation_;
+    rclcpp::Service<ig_active_reconstruction_msgs::srv::StringList>::SharedPtr available_ig_receiver_;
+    rclcpp::Service<ig_active_reconstruction_msgs::srv::StringList>::SharedPtr available_mm_receiver_;
   };
   
   

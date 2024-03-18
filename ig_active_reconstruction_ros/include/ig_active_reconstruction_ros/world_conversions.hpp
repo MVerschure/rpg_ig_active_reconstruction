@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "ig_active_reconstruction_msgs/InformationGainRetrievalCommand.h"
-#include "ig_active_reconstruction_msgs/InformationGain.h"
+#include "ig_active_reconstruction_msgs/msg/information_gain_retrieval_command.hpp"
+#include "ig_active_reconstruction_msgs/msg/information_gain.hpp"
 
 #include "ig_active_reconstruction/world_representation_communication_interface.hpp"
 
@@ -27,21 +27,21 @@ namespace ig_active_reconstruction
     
 namespace ros_conversions
 {
-    world_representation::CommunicationInterface::IgRetrievalConfig igRetrievalConfigFromMsg(ig_active_reconstruction_msgs::InformationGainRetrievalConfig& config);
+    world_representation::CommunicationInterface::IgRetrievalConfig igRetrievalConfigFromMsg(ig_active_reconstruction_msgs::msg::InformationGainRetrievalConfig& config);
     
-    ig_active_reconstruction_msgs::InformationGainRetrievalConfig igRetrievalConfigToMsg(world_representation::CommunicationInterface::IgRetrievalConfig& config);
+    ig_active_reconstruction_msgs::msg::InformationGainRetrievalConfig igRetrievalConfigToMsg(world_representation::CommunicationInterface::IgRetrievalConfig& config);
     
-    world_representation::CommunicationInterface::IgRetrievalCommand igRetrievalCommandFromMsg(ig_active_reconstruction_msgs::InformationGainRetrievalCommand& command_msg);
+    world_representation::CommunicationInterface::IgRetrievalCommand igRetrievalCommandFromMsg(ig_active_reconstruction_msgs::msg::InformationGainRetrievalCommand& command_msg);
     
-    ig_active_reconstruction_msgs::InformationGainRetrievalCommand igRetrievalCommandToMsg(world_representation::CommunicationInterface::IgRetrievalCommand& command);
+    ig_active_reconstruction_msgs::msg::InformationGainRetrievalCommand igRetrievalCommandToMsg(world_representation::CommunicationInterface::IgRetrievalCommand& command);
     
     world_representation::CommunicationInterface::ResultInformation resultInformationFromMsg(int& msg);
     
     int resultInformationToMsg(world_representation::CommunicationInterface::ResultInformation& msg);
     
-    world_representation::CommunicationInterface::IgRetrievalResult igRetrievalResultFromMsg(ig_active_reconstruction_msgs::InformationGain& msg);
+    world_representation::CommunicationInterface::IgRetrievalResult igRetrievalResultFromMsg(ig_active_reconstruction_msgs::msg::InformationGain& msg);
     
-    ig_active_reconstruction_msgs::InformationGain igRetrievalResultToMsg(world_representation::CommunicationInterface::IgRetrievalResult& msg);
+    ig_active_reconstruction_msgs::msg::InformationGain igRetrievalResultToMsg(world_representation::CommunicationInterface::IgRetrievalResult& msg);
 }
 
 }

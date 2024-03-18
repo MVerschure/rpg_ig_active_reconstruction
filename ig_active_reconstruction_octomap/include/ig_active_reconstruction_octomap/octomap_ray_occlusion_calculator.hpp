@@ -57,7 +57,7 @@ namespace octomap
     
     /*! Sets the octree in which occlusions will be marked.
      */
-    virtual void setOctree( boost::shared_ptr<TREE_TYPE> octree );
+    virtual void setOctree( std::shared_ptr<TREE_TYPE> octree );
     
   protected:
     double occlusion_update_dist_m_; //! Max distance behind points along ray for which an occlusion will be calculated [m].

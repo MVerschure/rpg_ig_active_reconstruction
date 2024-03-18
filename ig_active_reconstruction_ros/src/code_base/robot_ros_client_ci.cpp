@@ -15,119 +15,149 @@
  * on <http://www.gnu.org/licenses/>.
 */
 
-#include <stdexcept>
-
-#include "ig_active_reconstruction_ros/robot_ros_client_ci.hpp"
 #include "ig_active_reconstruction_ros/robot_conversions.hpp"
 #include "ig_active_reconstruction_ros/views_conversions.hpp"
-
-#include "ig_active_reconstruction_msgs/ViewRequest.h"
-#include "ig_active_reconstruction_msgs/RetrieveData.h"
-#include "ig_active_reconstruction_msgs/MovementCostCalculation.h"
-#include "ig_active_reconstruction_msgs/MoveToOrder.h"
-
+#include "ig_active_reconstruction_ros/robot_ros_client_ci.hpp"
 
 namespace ig_active_reconstruction
 {
-  
 namespace robot
 {
   
-  RosClientCI::RosClientCI( ros::NodeHandle nh_sub )
-  : nh_sub_(nh_sub)
+  RosClientCI::RosClientCI( rclcpp::Node::SharedPtr node )
+  : node_(node)
   {
-    current_view_retriever_ = nh_sub_.serviceClient<ig_active_reconstruction_msgs::ViewRequest>("robot/current_view");
-    data_retriever_ = nh_sub_.serviceClient<ig_active_reconstruction_msgs::RetrieveData>("robot/retrieve_data");
-    cost_retriever_ = nh_sub_.serviceClient<ig_active_reconstruction_msgs::MovementCostCalculation>("robot/movement_cost");
-    robot_mover_ = nh_sub_.serviceClient<ig_active_reconstruction_msgs::MoveToOrder>("robot/move_to");
+    current_view_retriever_ = node_->create_client<ig_active_reconstruction_msgs::srv::ViewRequest>("robot/current_view");
+    data_retriever_ = node_->create_client<ig_active_reconstruction_msgs::srv::RetrieveData>("robot/retrieve_data");
+    cost_retriever_ = node_->create_client<ig_active_reconstruction_msgs::srv::MovementCostCalculation>("robot/movement_cost");
+    robot_mover_ = node_->create_client<ig_active_reconstruction_msgs::srv::MoveToOrder>("robot/move_to");
   }
   
   views::View RosClientCI::getCurrentView()
   {
-    ig_active_reconstruction_msgs::ViewRequest request;
+    auto request = std::make_shared<ig_active_reconstruction_msgs::srv::ViewRequest::Request>();
+
+    while (!current_view_retriever_->wait_for_service()) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service current_view_retriever_. Exiting.");
+        throw std::runtime_error("shit");
+      }
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "current_view_retriever_: service not available, waiting again...");
+    }
+      
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Demanding current view");
+
+    auto result = current_view_retriever_->async_send_request(request);
     
-    ROS_INFO("Demanding current view");
-    bool response = current_view_retriever_.call(request);
-    
-    if( !response )
+    if (rclcpp::spin_until_future_complete(node_, result) == rclcpp::FutureReturnCode::SUCCESS)
+    {
+      return ros_conversions::viewFromMsg(result.get()->view);
+    } else {
       throw std::runtime_error("RosClientCI::getCurrentView failed for unknown reason.");
-    
-    return ros_conversions::viewFromMsg(request.response.view);
+    }
+
   }
   
   RosClientCI::ReceptionInfo RosClientCI::retrieveData()
   {
-    ig_active_reconstruction_msgs::RetrieveData request;
+    auto request = std::make_shared<ig_active_reconstruction_msgs::srv::RetrieveData::Request>();
     
-    ROS_INFO("Retrieving data");
-    bool response = data_retriever_.call(request);
-    
-    if( !response )
+    while (!data_retriever_->wait_for_service()) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service data_retriever_. Exiting.");
+        throw std::runtime_error("shit");
+      }
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "data_retriever_: service not available, waiting again...");
+    }
+
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Retrieving data");
+    auto result = data_retriever_->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node_, result) != rclcpp::FutureReturnCode::SUCCESS)
+    {
       throw std::runtime_error("RosClientCI::retrieveData failed for unknown reason.");
+    }
     
-    return ros_conversions::robotReceptionInfoFromMsg(request.response.receive_info);
+    return ros_conversions::robotReceptionInfoFromMsg(result.get()->receive_info);
   }
   
   MovementCost RosClientCI::movementCost( views::View& target_view )
   {
-    ig_active_reconstruction_msgs::MovementCostCalculation request;
+    auto request = std::make_shared<ig_active_reconstruction_msgs::srv::MovementCostCalculation::Request>();
     views::View current_view = getCurrentView();
     
-    request.request.start_view = ros_conversions::viewToMsg(current_view);
-    request.request.target_view = ros_conversions::viewToMsg(target_view);
-    request.request.additional_information = true;
+    request->start_view = ros_conversions::viewToMsg(current_view);
+    request->target_view = ros_conversions::viewToMsg(target_view);
+    request->additional_information = true;
     
-    
-    ROS_INFO("Retrieving movement cost");
-    bool response = cost_retriever_.call(request);
-    
-    MovementCost cost = ros_conversions::movementCostFromMsg(request.response.movement_cost);
-    if( !response )
+    while (!cost_retriever_->wait_for_service()) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service cost_retriever_. Exiting.");
+        throw std::runtime_error("shit");
+      }
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "cost_retriever_: service not available, waiting again...");
+    }
+
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Retrieving movement cost");
+    auto result = cost_retriever_->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node_, result) != rclcpp::FutureReturnCode::SUCCESS)
     {
+      MovementCost cost;
       cost.exception = MovementCost::Exception::RECEPTION_FAILED;
+      return cost;
     }
     
-    return cost;
+    return ros_conversions::movementCostFromMsg(result.get()->movement_cost);
   }
   
-  MovementCost RosClientCI::movementCost( views::View& start_view, views::View& target_view, bool fill_additional_information  )
+  MovementCost RosClientCI::movementCost( views::View& start_view, views::View& target_view, bool fill_additional_information )
   {
-    ig_active_reconstruction_msgs::MovementCostCalculation request;
+    auto request = std::make_shared<ig_active_reconstruction_msgs::srv::MovementCostCalculation::Request>();
     
-    request.request.start_view = ros_conversions::viewToMsg(start_view);
-    request.request.target_view = ros_conversions::viewToMsg(target_view);
-    request.request.additional_information = fill_additional_information;
+    request->start_view = ros_conversions::viewToMsg(start_view);
+    request->target_view = ros_conversions::viewToMsg(target_view);
+    request->additional_information = fill_additional_information;
     
-    
-    ROS_INFO("Retrieving movement cost");
-    bool response = cost_retriever_.call(request);
-    
-    MovementCost cost = ros_conversions::movementCostFromMsg(request.response.movement_cost);
-    if( !response )
+    while (!cost_retriever_->wait_for_service()) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service cost_retriever_. Exiting.");
+        throw std::runtime_error("shit");
+      }
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "cost_retriever_: service not available, waiting again...");
+    }
+
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Retrieving movement cost");
+    auto result = cost_retriever_->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node_, result) != rclcpp::FutureReturnCode::SUCCESS)
     {
+      MovementCost cost;
       cost.exception = MovementCost::Exception::RECEPTION_FAILED;
+      return cost;
     }
     
-    return cost;
+    return ros_conversions::movementCostFromMsg(result.get()->movement_cost);
   }
   
   bool RosClientCI::moveTo( views::View& target_view )
   {
-    ig_active_reconstruction_msgs::MoveToOrder request;
-    request.request.target_view = ros_conversions::viewToMsg(target_view);
+    auto request = std::make_shared<ig_active_reconstruction_msgs::srv::MoveToOrder::Request>();
+    request->target_view = ros_conversions::viewToMsg(target_view);
     
-    
-    ROS_INFO("Demanding robot to move.");
-    bool response = robot_mover_.call(request);
-    if( !response )
+    while (!robot_mover_->wait_for_service()) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service robot_mover_. Exiting.");
+        throw std::runtime_error("shit");
+      }
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "robot_mover_: service not available, waiting again...");
+    }
+
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Demanding robot to move.");
+    auto result = robot_mover_->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node_, result) != rclcpp::FutureReturnCode::SUCCESS)
     {
       return false;
     }
     
-    return request.response.success;
+    return result.get()->success;
   }
-  
-  
 }
-
 }

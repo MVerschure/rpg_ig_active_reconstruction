@@ -40,7 +40,7 @@ namespace octomap
      */
     struct Link
     {
-      boost::shared_ptr<TREE_TYPE> octree;
+      std::shared_ptr<TREE_TYPE> octree;
     };
     
     /*! Base class providing "link-functionality"
@@ -90,27 +90,27 @@ namespace octomap
      * @return Shared pointer to a newly instantiated object of type INPUT_OBJ_TYPE<TREE_TYPE,TEMPLATE_ARGS...>, instantiated with args passed to the constructor. Also its setLink()-function is called.
      */
     /*template< template<typename, typename ...> class INPUT_OBJ_TYPE, class ... TEMPLATE_ARGS, class ... CONSTRUCTOR_ARGS >
-    boost::shared_ptr< INPUT_OBJ_TYPE<TREE_TYPE,TEMPLATE_ARGS ...> > getLinkedObj( CONSTRUCTOR_ARGS ... args );*/
+    std::shared_ptr< INPUT_OBJ_TYPE<TREE_TYPE,TEMPLATE_ARGS ...> > getLinkedObj( CONSTRUCTOR_ARGS ... args );*/
     
     /*! (cpp11 version)Function overload TODO: Can't the above template function be adapted for class that only takes one template argument?! -> apparently might be a compiler bug
      */
     /*template< template<typename> class INPUT_OBJ_TYPE, class ... CONSTRUCTOR_ARGS >
-    boost::shared_ptr< INPUT_OBJ_TYPE<TREE_TYPE> > getLinkedObj( CONSTRUCTOR_ARGS ... args );*/
+    std::shared_ptr< INPUT_OBJ_TYPE<TREE_TYPE> > getLinkedObj( CONSTRUCTOR_ARGS ... args );*/
     
     /*! Returns a shared pointer to an object on which a setLink() was called, with a link object linking to the world representation. 
      * The type of the object is the first template parameter of the function. It must be a templated type with exactly one template argument: the tree type, which is set automatically, derived from the object.
      * It must have a member type config which it takes as a constructor argument.
      */
     template< template<typename> class INPUT_OBJ_TYPE>
-    boost::shared_ptr< INPUT_OBJ_TYPE<TREE_TYPE> > getLinkedObj( typename INPUT_OBJ_TYPE<TREE_TYPE>::Config config = typename INPUT_OBJ_TYPE<TREE_TYPE>::Config() );
+    std::shared_ptr< INPUT_OBJ_TYPE<TREE_TYPE> > getLinkedObj( typename INPUT_OBJ_TYPE<TREE_TYPE>::Config config = typename INPUT_OBJ_TYPE<TREE_TYPE>::Config() );
     
     /*!  (cpp03) Returns a shared pointer to an object on which a setLink() was called, with a link object linking to the world representation. For templated objects with a partial specialization, e.g. StdPclInputPointXYZ<TREE_TYPE>::Type.
      */
     template< template<typename> class INPUT_OBJ_TYPE>
-    boost::shared_ptr< typename INPUT_OBJ_TYPE<TREE_TYPE>::Type > getLinkedObj( typename INPUT_OBJ_TYPE<TREE_TYPE>::Type::Config config = typename INPUT_OBJ_TYPE<TREE_TYPE>::Type::Config() );
+    std::shared_ptr< typename INPUT_OBJ_TYPE<TREE_TYPE>::Type > getLinkedObj( typename INPUT_OBJ_TYPE<TREE_TYPE>::Type::Config config = typename INPUT_OBJ_TYPE<TREE_TYPE>::Type::Config() );
     
   protected:
-    boost::shared_ptr<TREE_TYPE> octree_; //! Octomap tree instance.
+    std::shared_ptr<TREE_TYPE> octree_; //! Octomap tree instance.
   };
   
 }

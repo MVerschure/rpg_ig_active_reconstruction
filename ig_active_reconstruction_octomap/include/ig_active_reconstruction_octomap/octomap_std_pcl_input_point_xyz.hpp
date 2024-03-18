@@ -34,7 +34,7 @@ namespace octomap
     typedef pcl::PointCloud<pcl::PointXYZ> PclType;
     typedef TREE_TYPE TreeType;
     typedef StdPclInput< TreeType, PclType > Type;
-    typedef boost::shared_ptr< StdPclInput< TreeType, PclType > > Ptr;
+    typedef std::shared_ptr< StdPclInput< TreeType, PclType > > Ptr;
   };
   
 }

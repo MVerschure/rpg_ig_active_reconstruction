@@ -26,7 +26,7 @@ namespace multikit
 {
   
   TEMPT
-  unsigned int CSCOPE::add( std::string ig_name, boost::function< boost::shared_ptr<TYPE>()> ig_creator )
+  unsigned int CSCOPE::add( std::string ig_name, boost::function< std::shared_ptr<TYPE>()> ig_creator )
   {
     Entry new_entry;
     new_entry.id = entries_.size();
@@ -39,9 +39,9 @@ namespace multikit
   }
   
   TEMPT
-  boost::shared_ptr<TYPE> CSCOPE::get(std::string name)
+  std::shared_ptr<TYPE> CSCOPE::get(std::string name)
   {
-    boost::shared_ptr<TYPE> new_object;
+    std::shared_ptr<TYPE> new_object;
     BOOST_FOREACH( Entry& entry, entries_ )
     {
       if( entry.name==name )
@@ -52,11 +52,11 @@ namespace multikit
   }
   
   TEMPT
-  boost::shared_ptr<TYPE> CSCOPE::get(unsigned int id)
+  std::shared_ptr<TYPE> CSCOPE::get(unsigned int id)
   {
     if( id>=entries_.size() )
     {
-      return boost::shared_ptr<TYPE>();
+      return std::shared_ptr<TYPE>();
     }
     return entries_[id].create();
   }

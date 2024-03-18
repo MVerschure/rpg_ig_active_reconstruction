@@ -32,7 +32,7 @@ namespace world_representation
 namespace octomap
 {
   TEMPT
-  void CSCOPE::setOctree( boost::shared_ptr<TREE_TYPE> octree )
+  void CSCOPE::setOctree( std::shared_ptr<TREE_TYPE> octree )
   {
     this->link_.octree = octree;
   }
@@ -41,7 +41,7 @@ namespace octomap
   template< template<typename,typename> class OCCLUSION_CALC_TYPE, class ... Types >
   void CSCOPE::setOcclusionCalculator( Types ... args )
   {
-    occlusion_calculator_ = boost::make_shared< OCCLUSION_CALC_TYPE<TREE_TYPE,POINTCLOUD_TYPE> >( args... );
+    occlusion_calculator_ = std::make_shared< OCCLUSION_CALC_TYPE<TREE_TYPE,POINTCLOUD_TYPE> >( args... );
     occlusion_calculator_->setLink(this->link_);
   }*/
   
@@ -49,7 +49,7 @@ namespace octomap
   template< template<typename,typename> class OCCLUSION_CALC_TYPE>
   void CSCOPE::setOcclusionCalculator( typename OCCLUSION_CALC_TYPE<TREE_TYPE,POINTCLOUD_TYPE>::Options options )
   {
-    occlusion_calculator_ = boost::make_shared< OCCLUSION_CALC_TYPE<TREE_TYPE,POINTCLOUD_TYPE> >( options );
+    occlusion_calculator_ = std::make_shared< OCCLUSION_CALC_TYPE<TREE_TYPE,POINTCLOUD_TYPE> >( options );
     occlusion_calculator_->setLink(this->link_);
   }
 }

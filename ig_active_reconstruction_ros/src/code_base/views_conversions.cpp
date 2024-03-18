@@ -18,6 +18,7 @@
 #include "ig_active_reconstruction_ros/views_conversions.hpp"
 #include "movements/ros_movements.h"
 #include <stdexcept>
+#include <iostream>
 
 namespace ig_active_reconstruction
 {
@@ -25,10 +26,10 @@ namespace ig_active_reconstruction
 namespace ros_conversions
 {
   
-  ig_active_reconstruction_msgs::ViewMsg viewToMsg( const views::View& view )
+  ig_active_reconstruction_msgs::msg::ViewMsg viewToMsg(const views::View& view)
   {
-    ig_active_reconstruction_msgs::ViewMsg msg;
-    msg.pose = movements::toROS( view.pose() );
+    ig_active_reconstruction_msgs::msg::ViewMsg msg;
+    msg.pose = movements::toROS(view.pose());
     msg.source_frame = view.sourceFrame();
     msg.is_bad = view.bad();
     msg.visited = view.timesVisited();
@@ -39,7 +40,7 @@ namespace ros_conversions
     return msg;
   }
   
-  views::View viewFromMsg( ig_active_reconstruction_msgs::ViewMsg& msg )
+  views::View viewFromMsg(const ig_active_reconstruction_msgs::msg::ViewMsg& msg)
   {
     views::View view(msg.index);
     view.pose() = movements::fromROS(msg.pose);
@@ -53,9 +54,9 @@ namespace ros_conversions
     return view;
   }
   
-  ig_active_reconstruction_msgs::ViewSpaceMsg viewSpaceToMsg( const views::ViewSpace& view_space )
+  ig_active_reconstruction_msgs::msg::ViewSpaceMsg viewSpaceToMsg( const views::ViewSpace& view_space )
   {
-    ig_active_reconstruction_msgs::ViewSpaceMsg msg;
+    ig_active_reconstruction_msgs::msg::ViewSpaceMsg msg;
     for( views::View const & view: view_space )
     {
       msg.views.push_back( viewToMsg(view) );
@@ -64,7 +65,7 @@ namespace ros_conversions
     return msg;
   }
   
-  views::ViewSpace viewSpaceFromMsg( ig_active_reconstruction_msgs::ViewSpaceMsg& msg )
+  views::ViewSpace viewSpaceFromMsg( ig_active_reconstruction_msgs::msg::ViewSpaceMsg& msg )
   {
     views::ViewSpace view_space;
     std::cout<<"\n\n size: "<<msg.views.size();
@@ -105,6 +106,7 @@ namespace ros_conversions
       case 0: return views::CommunicationInterface::ViewSpaceUpdateResult::SUCCEEDED;
       case 1: return views::CommunicationInterface::ViewSpaceUpdateResult::FAILED;
       case 2: return views::CommunicationInterface::ViewSpaceUpdateResult::NOT_AVAILABLE;
+      default: throw std::invalid_argument("ig_active_reconstruction::ros_conversions::viewSpaceUpdateResultFromMsg:: Invalid status received.");
     };
   }
   
@@ -115,6 +117,7 @@ namespace ros_conversions
       case views::CommunicationInterface::ViewSpaceUpdateResult::SUCCEEDED: return 0;
       case views::CommunicationInterface::ViewSpaceUpdateResult::FAILED: return 1;
       case views::CommunicationInterface::ViewSpaceUpdateResult::NOT_AVAILABLE: return 2;
+      default: throw std::invalid_argument("ig_active_reconstruction::ros_conversions::viewSpaceUpdateResultToMsg:: Invalid status received.");
     };
   }
   

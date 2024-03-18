@@ -45,7 +45,7 @@ public:
   movements::Pose applyToBasePose( movements::Pose& _base );
   
   /** returns a pointer to the internally hold RelativeMovementInstance */
-  boost::shared_ptr<RelativeMovementInstance> operator*();
+  std::shared_ptr<RelativeMovementInstance> operator*();
   
   /** creates a relative movement event chain where the movement represented by the class object is prepended to the argument _to_add */
   CombinedRelativeMovement operator+( RelativeMovement const& _to_add );
@@ -61,7 +61,7 @@ public:
   
   
 private:
-  boost::shared_ptr<RelativeMovementInstance> enwrapped_relative_movement_;
+  std::shared_ptr<RelativeMovementInstance> enwrapped_relative_movement_;
 };
 
 typedef RelativeMovement RelMove;

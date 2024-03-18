@@ -17,13 +17,13 @@
 
 #pragma once
 
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include "ig_active_reconstruction/robot_communication_interface.hpp"
 
-#include "ig_active_reconstruction_msgs/ViewRequest.h"
-#include "ig_active_reconstruction_msgs/RetrieveData.h"
-#include "ig_active_reconstruction_msgs/MovementCostCalculation.h"
-#include "ig_active_reconstruction_msgs/MoveToOrder.h"
+#include "ig_active_reconstruction_msgs/srv/view_request.hpp"
+#include "ig_active_reconstruction_msgs/srv/retrieve_data.hpp"
+#include "ig_active_reconstruction_msgs/srv/movement_cost_calculation.hpp"
+#include "ig_active_reconstruction_msgs/srv/move_to_order.hpp"
 
 namespace ig_active_reconstruction
 {
@@ -43,12 +43,12 @@ namespace robot
      * @param nh ROS node handle defines the namespace in which ROS communication will be carried out.
      * @param linked_interface (optional) directly add the interface that is linked internally (to which requests are forwarded.
      */
-    RosServerCI( ros::NodeHandle nh, boost::shared_ptr<CommunicationInterface> linked_interface = nullptr );
+    RosServerCI( rclcpp::Node::SharedPtr node, std::shared_ptr<CommunicationInterface> linked_interface = nullptr );
     
     /*! Set a new linked interface to which the class forwards all requests.
      * @param linked_interface Interface pointer.
      */
-    void setLinkedInterface( boost::shared_ptr<CommunicationInterface> linked_interface );
+    void setLinkedInterface( std::shared_ptr<CommunicationInterface> linked_interface );
   
     /*! returns the current view */
     virtual views::View getCurrentView();
@@ -83,23 +83,23 @@ namespace robot
     virtual bool moveTo( views::View& target_view );
     
   protected:
-    bool currentViewService( ig_active_reconstruction_msgs::ViewRequest::Request& req, ig_active_reconstruction_msgs::ViewRequest::Response& res );
-    
-    bool retrieveDataService( ig_active_reconstruction_msgs::RetrieveData::Request& req, ig_active_reconstruction_msgs::RetrieveData::Response& res );
-    
-    bool movementCostService( ig_active_reconstruction_msgs::MovementCostCalculation::Request& req, ig_active_reconstruction_msgs::MovementCostCalculation::Response& res );
-    
-    bool moveToService( ig_active_reconstruction_msgs::MoveToOrder::Request& req, ig_active_reconstruction_msgs::MoveToOrder::Response& res );
-    
+    bool currentViewService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::ViewRequest::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::ViewRequest::Response> res);
+
+    bool retrieveDataService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::RetrieveData::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::RetrieveData::Response> res);
+
+    bool movementCostService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::MovementCostCalculation::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::MovementCostCalculation::Response> res);
+
+    bool moveToService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::MoveToOrder::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::MoveToOrder::Response> res);
+  
   protected:
-    ros::NodeHandle nh_;
+    rclcpp::Node::SharedPtr node_;
     
-    boost::shared_ptr<CommunicationInterface> linked_interface_; //! Linked interface.
+    std::shared_ptr<CommunicationInterface> linked_interface_; //! Linked interface.
     
-    ros::ServiceServer current_view_service_;
-    ros::ServiceServer data_service_;
-    ros::ServiceServer cost_service_;
-    ros::ServiceServer robot_moving_service_;
+    rclcpp::Service<ig_active_reconstruction_msgs::srv::ViewRequest>::SharedPtr current_view_service_;
+    rclcpp::Service<ig_active_reconstruction_msgs::srv::RetrieveData>::SharedPtr data_service_;
+    rclcpp::Service<ig_active_reconstruction_msgs::srv::MovementCostCalculation>::SharedPtr cost_service_;
+    rclcpp::Service<ig_active_reconstruction_msgs::srv::MoveToOrder>::SharedPtr robot_moving_service_;
   };
   
 }

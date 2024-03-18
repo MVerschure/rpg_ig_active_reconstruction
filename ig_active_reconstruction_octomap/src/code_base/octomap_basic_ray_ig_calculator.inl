@@ -78,10 +78,10 @@ namespace octomap
     ray_caster_config.max_y_perc = command.config.ray_window.max_y_perc;
     
     //ray_caster_.setResolution(ray_caster_config);
-    boost::shared_ptr<RayCaster::RaySet> ray_set = ray_caster_.getRaySet(command.path[0]);
+    std::shared_ptr<RayCaster::RaySet> ray_set = ray_caster_.getRaySet(command.path[0]);
     
     // build ig metric set
-    std::vector< boost::shared_ptr< InformationGain<TREE_TYPE> > > ig_set;
+    std::vector< std::shared_ptr< InformationGain<TREE_TYPE> > > ig_set;
     if( !command.metric_ids.empty() )
     {
       IgRetrievalResult res;
@@ -141,7 +141,7 @@ namespace octomap
     }
     
     // retrieve information gains and build output
-    typename std::vector< boost::shared_ptr< InformationGain<TREE_TYPE> > >::iterator ig_it = ig_set.begin();
+    typename std::vector< std::shared_ptr< InformationGain<TREE_TYPE> > >::iterator ig_it = ig_set.begin();
     BOOST_FOREACH( IgRetrievalResult& res, output_ig )
     {
       if( res.status == ResultInformation::SUCCEEDED )
@@ -195,7 +195,7 @@ namespace octomap
   }
   
   TEMPT
-  void CSCOPE::calculateIgsOnRay( RayCaster::Ray& ray, std::vector< boost::shared_ptr< InformationGain<TREE_TYPE> > >& ig_set, RayCastSettings& setting )
+  void CSCOPE::calculateIgsOnRay( RayCaster::Ray& ray, std::vector< std::shared_ptr< InformationGain<TREE_TYPE> > >& ig_set, RayCastSettings& setting )
   {
     using ::octomap::point3d;
     using ::octomap::KeyRay;

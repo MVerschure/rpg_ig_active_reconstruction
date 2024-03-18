@@ -9,7 +9,7 @@ find_package(rosidl_default_generators REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
-rosidl_generate_interfaces(${PROJECT_NAME}
+set(msg_files
   "msg/InformationGain.msg"
   "msg/InformationGainRetrievalCommand.msg"
   "msg/InformationGainRetrievalConfig.msg"
@@ -17,6 +17,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/SubWindow.msg"
   "msg/ViewMsg.msg"
   "msg/ViewSpaceMsg.msg"
+)
+
+set(srv_files
   "srv/DeleteViews.srv"
   "srv/InformationGainCalculation.srv"
   "srv/MapMetricCalculation.srv"
@@ -28,11 +31,20 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/ViewRequest.srv"
   "srv/ViewSpaceRequest.srv"
   "srv/ViewSpaceUpdate.srv"
+)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
+  ${srv_files}
   DEPENDENCIES 
   std_msgs
   geometry_msgs
   sensor_msgs
 )
 
+#install(
+#  DIRECTORY msg
+#  DESTINATION share/${PROJECT_NAME}
+#)
 
 ament_package()

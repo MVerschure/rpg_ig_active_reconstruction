@@ -26,9 +26,9 @@ namespace ig_active_reconstruction
     
 namespace ros_conversions
 {
-  ig_active_reconstruction_msgs::MovementCostMsg movementCostToMsg(const robot::MovementCost& cost)
+  ig_active_reconstruction_msgs::msg::MovementCostMsg movementCostToMsg(const robot::MovementCost& cost)
   {
-    ig_active_reconstruction_msgs::MovementCostMsg msg;
+    ig_active_reconstruction_msgs::msg::MovementCostMsg msg;
     msg.cost = cost.cost;
     msg.exception = static_cast<uint32_t>(cost.exception);
     msg.additional_fields_names = cost.additional_field_names;
@@ -36,7 +36,7 @@ namespace ros_conversions
     return msg;
   }
 
-  robot::MovementCost movementCostFromMsg( ig_active_reconstruction_msgs::MovementCostMsg& _msg )
+  robot::MovementCost movementCostFromMsg( ig_active_reconstruction_msgs::msg::MovementCostMsg& _msg )
   {
     robot::MovementCost cost;
     cost.cost = _msg.cost;
@@ -46,9 +46,9 @@ namespace ros_conversions
     return cost;
   }
   
-  ig_active_reconstruction_msgs::ViewMsg viewToMsg( views::View& view )
+  ig_active_reconstruction_msgs::msg::ViewMsg viewToMsg( views::View& view )
   {
-    ig_active_reconstruction_msgs::ViewMsg msg;
+    ig_active_reconstruction_msgs::msg::ViewMsg msg;
     msg.pose = movements::toROS( view.pose() );
     msg.source_frame = view.sourceFrame();
     msg.is_bad = view.bad();
@@ -60,7 +60,7 @@ namespace ros_conversions
     return msg;
   }
   
-  views::View viewFromMsg( ig_active_reconstruction_msgs::ViewMsg& msg )
+  views::View viewFromMsg( ig_active_reconstruction_msgs::msg::ViewMsg& msg )
   {
     views::View view(msg.index);
     view.pose() = movements::fromROS(msg.pose);
@@ -74,9 +74,9 @@ namespace ros_conversions
     return view;
   }
   
-  ig_active_reconstruction_msgs::ViewSpaceMsg viewSpaceToMsg( views::ViewSpace& view_space )
+  ig_active_reconstruction_msgs::msg::ViewSpaceMsg viewSpaceToMsg( views::ViewSpace& view_space )
   {
-    ig_active_reconstruction_msgs::ViewSpaceMsg msg;
+    ig_active_reconstruction_msgs::msg::ViewSpaceMsg msg;
     for( views::View& view: view_space )
     {
       msg.views.push_back( viewToMsg(view) );

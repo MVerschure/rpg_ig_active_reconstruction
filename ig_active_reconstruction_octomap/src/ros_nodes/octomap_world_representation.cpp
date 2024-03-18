@@ -145,7 +145,7 @@ int main(int argc, char **argv)
   ig_calculator->registerInformationGain<AverageEntropyIg>(ig_config);
   
   // Expose the information gain calculator to ROS
-  iar::world_representation::RosServerCI<boost::shared_ptr> ig_server(nh,ig_calculator);
+  iar::world_representation::RosServerCI<std::shared_ptr> ig_server(nh,ig_calculator);
   
   
   // start spinning

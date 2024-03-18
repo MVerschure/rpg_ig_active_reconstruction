@@ -48,7 +48,7 @@ namespace octomap
      * @param pcl_input PclInput object pointer to which pointclouds are forwarded.
      * @param world_frame Name of the world coordinate frame to which the incoming pointclouds will be transformed.
      */
-    RosPclInput( ros::NodeHandle nh, boost::shared_ptr< PclInput<TREE_TYPE,POINTCLOUD_TYPE> > pcl_input, std::string world_frame );
+    RosPclInput( ros::NodeHandle nh, std::shared_ptr< PclInput<TREE_TYPE,POINTCLOUD_TYPE> > pcl_input, std::string world_frame );
     
     /*! Add a function that will be called after a new input was processed.
      * @param signal_call The function.
@@ -74,7 +74,7 @@ namespace octomap
     
   private:
     ros::NodeHandle nh_;
-    boost::shared_ptr< PclInput<TREE_TYPE,POINTCLOUD_TYPE> > pcl_input_;
+    std::shared_ptr< PclInput<TREE_TYPE,POINTCLOUD_TYPE> > pcl_input_;
     
     std::string world_frame_name_;
     

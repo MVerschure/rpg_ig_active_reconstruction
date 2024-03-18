@@ -50,7 +50,7 @@ int main(int argc, char **argv)
   
   // Iar communication interface
   //------------------------------------------------------------------
-  boost::shared_ptr<CommunicationInterface> robot_interface = boost::make_shared<CommunicationInterface>(nh,controller,sensor_in_topic,sensor_out_name);
+  std::shared_ptr<CommunicationInterface> robot_interface = std::make_shared<CommunicationInterface>(nh,controller,sensor_in_topic,sensor_out_name);
   
   // Expose communication interface to ROS
   //------------------------------------------------------------------

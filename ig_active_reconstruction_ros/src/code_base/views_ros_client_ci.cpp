@@ -1,126 +1,105 @@
-/* Copyright (c) 2016, Stefan Isler, islerstefan@bluewin.ch
- * (ETH Zurich / Robotics and Perception Group, University of Zurich, Switzerland)
- *
- * This file is part of ig_active_reconstruction, software for information gain based, active reconstruction.
- *
- * ig_active_reconstruction is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * ig_active_reconstruction is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- * Please refer to the GNU Lesser General Public License for details on the license,
- * on <http://www.gnu.org/licenses/>.
-*/
-
 #include <stdexcept>
 
-#include "ig_active_reconstruction_ros/views_ros_client_ci.hpp"
 #include "ig_active_reconstruction_ros/views_conversions.hpp"
+#include "ig_active_reconstruction_ros/views_ros_client_ci.hpp"
 
-#include "ig_active_reconstruction_msgs/DeleteViews.h"
-#include "ig_active_reconstruction_msgs/ViewSpaceRequest.h"
-#include "ig_active_reconstruction_msgs/ViewSpaceUpdate.h"
-
+#include "ig_active_reconstruction_msgs/srv/retrieve_data.hpp"
+#include "ig_active_reconstruction_msgs/srv/movement_cost_calculation.hpp"
+#include "ig_active_reconstruction_msgs/srv/move_to_order.hpp"
 
 namespace ig_active_reconstruction
 {
-  
 namespace views
 {
   
-  RosClientCI::RosClientCI( ros::NodeHandle nh )
-  : nh_(nh)
+  RosClientCI::RosClientCI( rclcpp::Node::SharedPtr node )
+  : node_(node)
   {
-    planning_space_receiver_ = nh.serviceClient<ig_active_reconstruction_msgs::ViewSpaceRequest>("views/space");
-    views_adder_ = nh.serviceClient<ig_active_reconstruction_msgs::ViewSpaceUpdate>("views/add");
-    views_deleter_ = nh.serviceClient<ig_active_reconstruction_msgs::DeleteViews>("views/delete");
+    planning_space_receiver_ = node_->create_client<ig_active_reconstruction_msgs::srv::ViewSpaceRequest>("views/space");
+    views_adder_ = node_->create_client<ig_active_reconstruction_msgs::srv::ViewSpaceUpdate>("views/add");
+    views_deleter_ = node_->create_client<ig_active_reconstruction_msgs::srv::DeleteViews>("views/delete");
   }
   
   const ViewSpace& RosClientCI::getViewSpace()
   {
-    ig_active_reconstruction_msgs::ViewSpaceRequest call;
+    auto request = std::make_shared<ig_active_reconstruction_msgs::srv::ViewSpaceRequest::Request>();
     
-    ROS_INFO("Demanding viewspace.");
-    bool response = planning_space_receiver_.call(call);
-    
-    if( response )
-      viewspace_ = ros_conversions::viewSpaceFromMsg(call.response.viewspace);
-    
-    return viewspace_;
-  }
-  
-  RosClientCI::ViewSpaceUpdateResult RosClientCI::addViews( std::vector<View>& new_views )
-  {
-    ig_active_reconstruction_msgs::ViewSpaceUpdate call;
-    
-    for(View& view: new_views)
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Demanding viewspace.");
+    auto result = planning_space_receiver_->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node_, result) != rclcpp::FutureReturnCode::SUCCESS)
     {
-      call.request.views.push_back( ros_conversions::viewToMsg(view) );
+      throw std::runtime_error("RosClientCI::getViewSpace failed for unknown reason.");
     }
     
-    
-    ROS_INFO("Demanding to add view(s).");
-    bool response = views_adder_.call(call);
-    
-    if( !response )
-      return ViewSpaceUpdateResult::FAILED;
-    
-    return ros_conversions::viewSpaceUpdateResultFromMsg(call.response.update_result);
+    return ros_conversions::viewSpaceFromMsg(result.get()->viewspace);
   }
   
-  RosClientCI::ViewSpaceUpdateResult RosClientCI::addView( View new_view )
+  RosClientCI::ViewSpaceUpdateResult RosClientCI::addViews(std::vector<View>& new_views)
   {
-    ig_active_reconstruction_msgs::ViewSpaceUpdate call;
+    auto request = std::make_shared<ig_active_reconstruction_msgs::srv::ViewSpaceUpdate::Request>();
     
-    call.request.views.push_back( ros_conversions::viewToMsg(new_view) );
-    
-    
-    ROS_INFO("Demanding to add view.");
-    bool response = views_adder_.call(call);
-    
-    if( !response )
-      return ViewSpaceUpdateResult::FAILED;
-    
-    return ros_conversions::viewSpaceUpdateResultFromMsg(call.response.update_result);
-  }
-  
-  RosClientCI::ViewSpaceUpdateResult RosClientCI::deleteViews( std::vector<View::IdType>& view_ids )
-  {
-    ig_active_reconstruction_msgs::DeleteViews call;
-    
-    for(View::IdType& id:view_ids)
+    for(const auto& view : new_views)
     {
-      call.request.ids.push_back(id);
+      request->views.push_back(ros_conversions::viewToMsg(view));
     }
     
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Demanding to add view(s).");
+    auto result = views_adder_->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node_, result) != rclcpp::FutureReturnCode::SUCCESS)
+    {
+      return RosClientCI::ViewSpaceUpdateResult::FAILED;
+    }
     
-    ROS_INFO("Demanding to delete view(s).");
-    bool response = views_deleter_.call(call);
-    if( !response )
-      return ViewSpaceUpdateResult::FAILED;
-    
-    return ros_conversions::viewSpaceUpdateResultFromMsg(call.response.update_result);
+    return ros_conversions::viewSpaceUpdateResultFromMsg(result.get()->update_result);
   }
   
-  RosClientCI::ViewSpaceUpdateResult RosClientCI::deleteView( View::IdType view_id )
+  RosClientCI::ViewSpaceUpdateResult RosClientCI::addView(View new_view)
   {
-    ig_active_reconstruction_msgs::DeleteViews call;
+    auto request = std::make_shared<ig_active_reconstruction_msgs::srv::ViewSpaceUpdate::Request>();
+    request->views.push_back(ros_conversions::viewToMsg(new_view));
     
-    call.request.ids.push_back(view_id);
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Demanding to add view.");
+    auto result = views_adder_->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node_, result) != rclcpp::FutureReturnCode::SUCCESS)
+    {
+      return RosClientCI::ViewSpaceUpdateResult::FAILED;
+    }
     
-    
-    ROS_INFO("Demanding to delete view.");
-    bool response = views_deleter_.call(call);
-    if( !response )
-      return ViewSpaceUpdateResult::FAILED;
-    
-    return ros_conversions::viewSpaceUpdateResultFromMsg(call.response.update_result);
+    return ros_conversions::viewSpaceUpdateResultFromMsg(result.get()->update_result);
   }
   
+  RosClientCI::ViewSpaceUpdateResult RosClientCI::deleteViews(std::vector<View::IdType>& view_ids)
+  {
+    auto request = std::make_shared<ig_active_reconstruction_msgs::srv::DeleteViews::Request>();
+    
+    for(const auto& id : view_ids)
+    {
+      request->ids.push_back(id);
+    }
+    
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Demanding to delete view(s).");
+    auto result = views_deleter_->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node_, result) != rclcpp::FutureReturnCode::SUCCESS)
+    {
+      return RosClientCI::ViewSpaceUpdateResult::FAILED;
+    }
+    
+    return ros_conversions::viewSpaceUpdateResultFromMsg(result.get()->update_result);
+  }
   
+  RosClientCI::ViewSpaceUpdateResult RosClientCI::deleteView(View::IdType view_id)
+  {
+    auto request = std::make_shared<ig_active_reconstruction_msgs::srv::DeleteViews::Request>();
+    request->ids.push_back(view_id);
+    
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Demanding to delete view.");
+    auto result = views_deleter_->async_send_request(request);
+    if (rclcpp::spin_until_future_complete(node_, result) != rclcpp::FutureReturnCode::SUCCESS)
+    {
+      return RosClientCI::ViewSpaceUpdateResult::FAILED;
+    }
+    
+    return ros_conversions::viewSpaceUpdateResultFromMsg(result.get()->update_result);
+  }
 }
-
 }

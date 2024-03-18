@@ -25,7 +25,7 @@ namespace ig_active_reconstruction
     
 namespace ros_conversions
 {
-  world_representation::CommunicationInterface::IgRetrievalConfig igRetrievalConfigFromMsg(ig_active_reconstruction_msgs::InformationGainRetrievalConfig& config_msg)
+  world_representation::CommunicationInterface::IgRetrievalConfig igRetrievalConfigFromMsg(ig_active_reconstruction_msgs::msg::InformationGainRetrievalConfig& config_msg)
   {
     world_representation::CommunicationInterface::IgRetrievalConfig config;
     config.ray_resolution_x = config_msg.ray_resolution_x;
@@ -39,9 +39,9 @@ namespace ros_conversions
     return config;
   }
   
-  ig_active_reconstruction_msgs::InformationGainRetrievalConfig igRetrievalConfigToMsg(world_representation::CommunicationInterface::IgRetrievalConfig& config)
+  ig_active_reconstruction_msgs::msg::InformationGainRetrievalConfig igRetrievalConfigToMsg(world_representation::CommunicationInterface::IgRetrievalConfig& config)
   {
-    ig_active_reconstruction_msgs::InformationGainRetrievalConfig config_msg;
+    ig_active_reconstruction_msgs::msg::InformationGainRetrievalConfig config_msg;
     config_msg.ray_resolution_x = config.ray_resolution_x;
     config_msg.ray_resolution_y = config.ray_resolution_y;
     config_msg.ray_window.min_x_perc = config.ray_window.min_x_perc;
@@ -52,7 +52,7 @@ namespace ros_conversions
     return config_msg;
   }
   
-  world_representation::CommunicationInterface::IgRetrievalCommand igRetrievalCommandFromMsg(ig_active_reconstruction_msgs::InformationGainRetrievalCommand& command_msg)
+  world_representation::CommunicationInterface::IgRetrievalCommand igRetrievalCommandFromMsg(ig_active_reconstruction_msgs::msg::InformationGainRetrievalCommand& command_msg)
   {
     world_representation::CommunicationInterface::IgRetrievalCommand command;
     
@@ -76,9 +76,9 @@ namespace ros_conversions
     return command;
   }
   
-  ig_active_reconstruction_msgs::InformationGainRetrievalCommand igRetrievalCommandToMsg(world_representation::CommunicationInterface::IgRetrievalCommand& command)
+  ig_active_reconstruction_msgs::msg::InformationGainRetrievalCommand igRetrievalCommandToMsg(world_representation::CommunicationInterface::IgRetrievalCommand& command)
   {
-    ig_active_reconstruction_msgs::InformationGainRetrievalCommand command_msg;
+    ig_active_reconstruction_msgs::msg::InformationGainRetrievalCommand command_msg;
     
     BOOST_FOREACH(movements::Pose& pose, command.path)
     {
@@ -122,7 +122,7 @@ namespace ros_conversions
     };
   }
   
-  world_representation::CommunicationInterface::IgRetrievalResult igRetrievalResultFromMsg(ig_active_reconstruction_msgs::InformationGain& msg)
+  world_representation::CommunicationInterface::IgRetrievalResult igRetrievalResultFromMsg(ig_active_reconstruction_msgs::msg::InformationGain& msg)
   {
     world_representation::CommunicationInterface::IgRetrievalResult result;
     
@@ -132,9 +132,9 @@ namespace ros_conversions
     return result;
   }
   
-  ig_active_reconstruction_msgs::InformationGain igRetrievalResultToMsg(world_representation::CommunicationInterface::IgRetrievalResult& result)
+  ig_active_reconstruction_msgs::msg::InformationGain igRetrievalResultToMsg(world_representation::CommunicationInterface::IgRetrievalResult& result)
   {
-    ig_active_reconstruction_msgs::InformationGain msg;
+    ig_active_reconstruction_msgs::msg::InformationGain msg;
     
     msg.status = resultInformationToMsg(result.status);
     msg.predicted_gain = result.predicted_gain;

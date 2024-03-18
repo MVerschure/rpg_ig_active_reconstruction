@@ -39,7 +39,7 @@ namespace octomap
   class StdPclInput: public PclInput<TREE_TYPE,POINTCLOUD_TYPE>
   {
   public:
-    typedef boost::shared_ptr< StdPclInput<TREE_TYPE,POINTCLOUD_TYPE> > Ptr;
+    typedef std::shared_ptr< StdPclInput<TREE_TYPE,POINTCLOUD_TYPE> > Ptr;
     typedef TREE_TYPE TreeType;
     typedef POINTCLOUD_TYPE PclType;
     

@@ -78,28 +78,28 @@ namespace ig_active_reconstruction
     /*! Sets the robot communication interface with which the view planner corresponds.
      * Can't be set if running.
      */
-    virtual void setRobotCommUnit( boost::shared_ptr<robot::CommunicationInterface> robot_comm_unit );
+    virtual void setRobotCommUnit( std::shared_ptr<robot::CommunicationInterface> robot_comm_unit );
     
     /*! Sets the viewspace communication interface with which the view planner corresponds.
      * Can't be set if running.
      */
-    virtual void setViewsCommUnit( boost::shared_ptr<views::CommunicationInterface> views_comm_unit );
+    virtual void setViewsCommUnit( std::shared_ptr<views::CommunicationInterface> views_comm_unit );
     
     /*! Sets the world representation communication interface with which the view planner corresponds.
      * Can't be set if running.
      */
-    virtual void setWorldCommUnit( boost::shared_ptr<world_representation::CommunicationInterface> world_comm_unit );
+    virtual void setWorldCommUnit( std::shared_ptr<world_representation::CommunicationInterface> world_comm_unit );
     
     
     /*! Sets the utility function calculator that is to be used. It defines which and how information gain metrics are used.
      * Can't be set if running.
      */
-    virtual void setUtility( boost::shared_ptr<UtilityCalculator> utility_calculator );
+    virtual void setUtility( std::shared_ptr<UtilityCalculator> utility_calculator );
     
     /*! Sets a goal evaluation module which determines if the view planner shall continue or not.
      * Can't be set if running.
      */
-    virtual void setGoalEvaluationModule( boost::shared_ptr<GoalEvaluationModule> goal_evaluation_module );
+    virtual void setGoalEvaluationModule( std::shared_ptr<GoalEvaluationModule> goal_evaluation_module );
     
     /*! Starts the procedure in its own thread if it was stopped, continues the procedure if it was paused.
      * @return True if the procedure started successfully, false if not (e.g. because no all necessary parameters are set, like the communication units)
@@ -136,12 +136,12 @@ namespace ig_active_reconstruction
   protected:
     Config config_; //! View planner configuration.
     
-    boost::shared_ptr<robot::CommunicationInterface> robot_comm_unit_; //! Robot communication interface with which the view planner corresponds.
-    boost::shared_ptr<views::CommunicationInterface> views_comm_unit_; //! Viewspace communication interface with which the view planner corresponds.
-    boost::shared_ptr<world_representation::CommunicationInterface> world_comm_unit_; //! World representation communication interface with which the view planner corresponds.
+    std::shared_ptr<robot::CommunicationInterface> robot_comm_unit_; //! Robot communication interface with which the view planner corresponds.
+    std::shared_ptr<views::CommunicationInterface> views_comm_unit_; //! Viewspace communication interface with which the view planner corresponds.
+    std::shared_ptr<world_representation::CommunicationInterface> world_comm_unit_; //! World representation communication interface with which the view planner corresponds.
     
-    boost::shared_ptr<UtilityCalculator> utility_calculator_; //! Utility calculator for evaluating different views. It also defines which information gains are used.
-    boost::shared_ptr<GoalEvaluationModule> goal_evaluation_module_; //! Goal evaluation module which determines if the view planner shall continue or not.
+    std::shared_ptr<UtilityCalculator> utility_calculator_; //! Utility calculator for evaluating different views. It also defines which information gains are used.
+    std::shared_ptr<GoalEvaluationModule> goal_evaluation_module_; //! Goal evaluation module which determines if the view planner shall continue or not.
     
     Status status_; //! Current status.
     std::thread running_procedure_; //! Thread for the procedure.
@@ -149,7 +149,7 @@ namespace ig_active_reconstruction
     bool runProcedure_; //! True as long as the procedure is running or paused.
     bool pauseProcedure_; //! True if the procedure should pause.
     
-    boost::shared_ptr<views::ViewSpace> viewspace_; //! Current viewspace.
+    std::shared_ptr<views::ViewSpace> viewspace_; //! Current viewspace.
     
   };
   

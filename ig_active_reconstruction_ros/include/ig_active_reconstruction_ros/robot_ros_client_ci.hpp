@@ -17,12 +17,16 @@
 
 #pragma once
 
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include "ig_active_reconstruction/robot_communication_interface.hpp"
+
+#include "ig_active_reconstruction_msgs/srv/view_request.hpp"
+#include "ig_active_reconstruction_msgs/srv/retrieve_data.hpp"
+#include "ig_active_reconstruction_msgs/srv/movement_cost_calculation.hpp"
+#include "ig_active_reconstruction_msgs/srv/move_to_order.hpp"
 
 namespace ig_active_reconstruction
 {
-  
 namespace robot
 {
   
@@ -36,7 +40,7 @@ namespace robot
     /*! Constructor
      * @param nh_sub ROS node handle defines the namespace in which ROS communication will be carried out for any topic or service subscribers.
      */
-    RosClientCI( ros::NodeHandle nh_sub );
+    RosClientCI( rclcpp::Node::SharedPtr node);
   
     /*! returns the current view */
     virtual views::View getCurrentView();
@@ -44,41 +48,40 @@ namespace robot
     /*! Commands robot to retrieve new data.
      * 
      * @throws std::runtime_error If receiving data failed.
-    * @return information about what happened (data received, receival failed )
-    */
+     * @return information about what happened (data received, receival failed )
+     */
     virtual ReceptionInfo retrieveData();
     
     /*! Returns the cost to move from the current view to the indicated view
      * 
      * @throws std::runtime_error If receiving data failed.
-    * @param target_view the next view
-    * @return cost to move to that view
-    */
-    virtual MovementCost movementCost( views::View& target_view );
+     * @param target_view the next view
+     * @return cost to move to that view
+     */
+    virtual MovementCost movementCost(views::View& target_view);
     
     /*! returns the cost to move from start view to target view
-    * @param start_view the start view
-    * @param target_view the target view
-    * @param fill_additional_information if true then the different parts of the cost will be included in the additional fields as well
-    * @return cost for the movement
-    */
-    virtual MovementCost movementCost( views::View& start_view, views::View& target_view, bool fill_additional_information  );
+     * @param start_view the start view
+     * @param target_view the target view
+     * @param fill_additional_information if true then the different parts of the cost will be included in the additional fields as well
+     * @return cost for the movement
+     */
+    virtual MovementCost movementCost(views::View& start_view, views::View& target_view, bool fill_additional_information);
     
     /*! Tells the robot to get the camera to a new view
-    * @param _target_view where to move to
-    * @return false if the operation failed
-    */
-    virtual bool moveTo( views::View& target_view );
+     * @param _target_view where to move to
+     * @return false if the operation failed
+     */
+    virtual bool moveTo(views::View& target_view);
     
   protected:
-    ros::NodeHandle nh_sub_;
+    rclcpp::Node::SharedPtr node_;
     
-    ros::ServiceClient current_view_retriever_;
-    ros::ServiceClient data_retriever_;
-    ros::ServiceClient cost_retriever_;
-    ros::ServiceClient robot_mover_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::ViewRequest>::SharedPtr current_view_retriever_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::RetrieveData>::SharedPtr data_retriever_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::MovementCostCalculation>::SharedPtr cost_retriever_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::MoveToOrder>::SharedPtr robot_mover_;
   };
   
 }
-
 }

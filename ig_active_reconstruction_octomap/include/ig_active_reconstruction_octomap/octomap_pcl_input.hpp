@@ -42,7 +42,7 @@ namespace octomap
     
     /*! Sets the octree in which occlusions will be marked.
      */
-    virtual void setOctree( boost::shared_ptr<TREE_TYPE> octree );
+    virtual void setOctree( std::shared_ptr<TREE_TYPE> octree );
     
     /*! Inserts a new pointcloud. If an occlusion calculator was set, it is called at the end.
      * 
@@ -72,7 +72,7 @@ namespace octomap
     void setOcclusionCalculator( typename OCCLUSION_CALC_TYPE<TREE_TYPE,POINTCLOUD_TYPE>::Options options = typename OCCLUSION_CALC_TYPE<TREE_TYPE,POINTCLOUD_TYPE>::Options() );
     
   protected:
-    boost::shared_ptr< OcclusionCalculator<TREE_TYPE,POINTCLOUD_TYPE> > occlusion_calculator_; //! Calculates occlusions
+    std::shared_ptr< OcclusionCalculator<TREE_TYPE,POINTCLOUD_TYPE> > occlusion_calculator_; //! Calculates occlusions
   };
 }
 

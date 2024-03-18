@@ -17,9 +17,13 @@
 
 #pragma once
 
-
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include "ig_active_reconstruction/world_representation_communication_interface.hpp"
+
+#include "ig_active_reconstruction_msgs/srv/information_gain_calculation.hpp"
+#include "ig_active_reconstruction_msgs/srv/map_metric_calculation.hpp"
+#include "ig_active_reconstruction_msgs/srv/string_list.hpp"
+
 
 namespace ig_active_reconstruction
 {
@@ -35,7 +39,7 @@ namespace world_representation
     /*! Constructor
      * @param nh ROS node handle defines the namespace in which ROS communication will be carried out.
      */
-    RosClientCI( ros::NodeHandle nh );
+    RosClientCI( rclcpp::Node::SharedPtr node );
     
     virtual ~RosClientCI(){};
     
@@ -61,12 +65,12 @@ namespace world_representation
     virtual void availableMapMetrics( std::vector<MetricInfo>& available_map_metrics );
     
   protected:
-    ros::NodeHandle nh_;
+    rclcpp::Node::SharedPtr node_;
     
-    ros::ServiceClient view_ig_computation_;
-    ros::ServiceClient map_metric_computation_;
-    ros::ServiceClient available_ig_receiver_;
-    ros::ServiceClient available_mm_receiver_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::InformationGainCalculation>::SharedPtr view_ig_computation_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::MapMetricCalculation>::SharedPtr map_metric_computation_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::StringList>::SharedPtr available_ig_receiver_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::StringList>::SharedPtr available_mm_receiver_;
   };
   
   

@@ -148,7 +148,7 @@ const std::vector<double>& View::additionalFieldsValues() const
   return additional_fields_values_;
 }
 
-boost::shared_ptr<ig_active_reconstruction::views::View::ViewInfo>& View::associatedData()
+std::shared_ptr<ig_active_reconstruction::views::View::ViewInfo>& View::associatedData()
 {
   return associated_data_;
 }

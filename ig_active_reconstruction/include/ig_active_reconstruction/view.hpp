@@ -76,7 +76,7 @@ public:
   const bool& nonViewSpace() const;
   
   /*! get the associated data */
-  boost::shared_ptr<ViewInfo>& associatedData();
+  std::shared_ptr<ViewInfo>& associatedData();
   
   /*! Returns the index of the view.
    */
@@ -101,7 +101,7 @@ private:
   
   movements::Pose pose_; //! the pose...
   std::string source_frame_; //! pose is relative to this frame, that is the transform that could be used to transform a point in the pose frame into one in the source frame
-  boost::shared_ptr<ViewInfo> associated_data_; //! interface that gives possibility for a robot to store robot specific data that is associated with the pose, e.g. for the Youbot some IK calculations can be made beforehand but the robot needs to know which data implements a given view
+  std::shared_ptr<ViewInfo> associated_data_; //! interface that gives possibility for a robot to store robot specific data that is associated with the pose, e.g. for the Youbot some IK calculations can be made beforehand but the robot needs to know which data implements a given view
   std::vector<std::string> additional_fields_names_;
   std::vector<double> additional_fields_values_;
   bool is_reachable_; //! whether the view is reachable or not

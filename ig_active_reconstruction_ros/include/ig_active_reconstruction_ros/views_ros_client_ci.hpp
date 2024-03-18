@@ -17,8 +17,12 @@
 
 #pragma once
 
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include "ig_active_reconstruction/views_communication_interface.hpp"
+
+#include "ig_active_reconstruction_msgs/srv/view_space_request.hpp"
+#include "ig_active_reconstruction_msgs/srv/view_space_update.hpp"
+#include "ig_active_reconstruction_msgs/srv/delete_views.hpp"
 
 namespace ig_active_reconstruction
 {
@@ -34,7 +38,7 @@ namespace views
     /*! Constructor
      * @param nh ROS node handle defines the namespace in which ROS communication will be carried out.
      */
-    RosClientCI( ros::NodeHandle nh );
+    RosClientCI( std::shared_ptr<rclcpp::Node> node );
     
     /*! Returns the view space that is available for planning.
       * @param _space pointer to the ViewSpace object that should be filled
@@ -64,11 +68,11 @@ namespace views
     virtual ViewSpaceUpdateResult deleteView( View::IdType view_id );
     
   protected:
-    ros::NodeHandle nh_;
+    rclcpp::Node::SharedPtr node_;
     
-    ros::ServiceClient planning_space_receiver_;
-    ros::ServiceClient views_adder_;
-    ros::ServiceClient views_deleter_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::ViewSpaceRequest>::SharedPtr planning_space_receiver_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::ViewSpaceUpdate>::SharedPtr views_adder_;
+    rclcpp::Client<ig_active_reconstruction_msgs::srv::DeleteViews>::SharedPtr views_deleter_;
     
     ViewSpace viewspace_;
   };

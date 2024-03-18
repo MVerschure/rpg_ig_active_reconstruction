@@ -49,7 +49,7 @@ namespace octomap
     
     /*! Sets the octree in which occlusions will be marked.
      */
-    virtual void setOctree( boost::shared_ptr<TREE_TYPE> octree )=0;
+    virtual void setOctree( std::shared_ptr<TREE_TYPE> octree )=0;
   };
   
 }

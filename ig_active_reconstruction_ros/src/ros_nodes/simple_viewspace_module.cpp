@@ -16,37 +16,38 @@
 */
 
 #include "rclcpp/rclcpp.hpp"
-
 #include "ig_active_reconstruction_ros/param_loader.hpp"
 #include "ig_active_reconstruction/views_simple_view_space_module.hpp"
 #include "ig_active_reconstruction_ros/views_ros_server_ci.hpp"
 
-/*! Implements a ROS node holding a SimpleViewSpace module, loading the (possibly only initial) viewspace from file.
- */
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "simple_viewspace_module");
-  ros::NodeHandle nh;
+  rclcpp::init(argc, argv);
+  rclcpp::Node::SharedPtr node = std::make_shared<rclcpp::Node>("simple_viewspace_module");
   
   namespace iar = ig_active_reconstruction;
   
   // Load configuration
   //-----------------------------------------------------------------------------------------
-  std::string viewspace_file_path;
-  ros_tools::getExpParam(viewspace_file_path,"viewspace_file_path");
+  // Hardcoding it because parameters feel like a hassle.
+  std::string viewspace_file_path = "/home/mink/Desktop/SAMXL/active_reconstruction_ws/src/rpg_ig_active_reconstruction/example/flying_gazebo_stereo_cam/config/dome_48_views.txt";
+  
+  //std::string viewspace_file_path;
+  //rclcpp::Parameter::Parameter("viewspace_file_path", viewspace_file_path);
   
   // Instantiate viewspace module
   //-----------------------------------------------------------------------------------------
-  boost::shared_ptr<iar::views::CommunicationInterface> viewspace_module = boost::make_shared<iar::views::SimpleViewSpaceModule>(viewspace_file_path);
+  auto viewspace_module = std::make_shared<iar::views::SimpleViewSpaceModule>(viewspace_file_path);
   
   // Expose the viewspace module to ROS
   //-----------------------------------------------------------------------------------------
-  iar::views::RosServerCI comm_unit(nh,viewspace_module);
+  iar::views::RosServerCI comm_unit(node, viewspace_module);
   
+  // Spin
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "simple_viewspace_module is ready");
+  rclcpp::spin(node);
   
-  // spin...
-  ROS_INFO("simple_viewspace_module is ready");
-  ros::spin();
+  rclcpp::shutdown();
   
   return 0;
 }

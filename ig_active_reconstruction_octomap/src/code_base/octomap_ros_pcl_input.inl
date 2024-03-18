@@ -32,7 +32,7 @@ namespace world_representation
 namespace octomap
 {
   TEMPT
-  CSCOPE::RosPclInput( ros::NodeHandle nh, boost::shared_ptr< PclInput<TREE_TYPE,POINTCLOUD_TYPE> > pcl_input, std::string world_frame )
+  CSCOPE::RosPclInput( ros::NodeHandle nh, std::shared_ptr< PclInput<TREE_TYPE,POINTCLOUD_TYPE> > pcl_input, std::string world_frame )
   : nh_(nh)
   , pcl_input_(pcl_input)
   , world_frame_name_(world_frame)

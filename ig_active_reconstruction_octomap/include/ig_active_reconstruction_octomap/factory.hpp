@@ -36,13 +36,13 @@ namespace multikit
     {
       unsigned int id;
       std::string name;
-      boost::function< boost::shared_ptr<TYPE>() > create;
+      boost::function< std::shared_ptr<TYPE>() > create;
     };
     
     typedef typename std::vector<Entry>::iterator Iterator;
     
     typedef TYPE Type;
-    typedef boost::shared_ptr<TYPE> TypePtr;
+    typedef std::shared_ptr<TYPE> TypePtr;
     
   public:
     /*! Function to register object creation functions.
@@ -50,21 +50,21 @@ namespace multikit
       * @param ig_creator Function that returns a pointer to a new object of the corresponding type.
       * @return The unique id of the object type.
       */
-    unsigned int add( std::string ig_name, boost::function< boost::shared_ptr<TYPE>() > ig_creator );
+    unsigned int add( std::string ig_name, boost::function< std::shared_ptr<TYPE>() > ig_creator );
     
     /*! Function to create a new object of a specific type through its name.
       * If more than one object type registered themselves with the same name, the lastly registered one overwrites its predecessors.
       * @param name Name of the object type.
       * @return Pointer to a newly created object type instance 'name', nullptr if 'name' was not found.
       */
-    boost::shared_ptr<TYPE> get(std::string name);
+    std::shared_ptr<TYPE> get(std::string name);
     
     /*! Function to create a new object of a specific type through its id.
       * Unlike its name, the id will be unique (unless an overflow occurs for the id type... ;) )
       * @param id Id of the object type.
       * @return Poitner to a newly created object type instance with the given id.
       */
-    boost::shared_ptr<TYPE> get(unsigned int id);
+    std::shared_ptr<TYPE> get(unsigned int id);
     
     /*! Returns the name corresponding to an id.
      * @throws std::invalid_argument if the id is unknown

@@ -92,7 +92,7 @@ namespace octomap
     /*! Helper function for binding make shared.
      */
     template<template<typename> class IG_METRIC_TYPE>
-    boost::shared_ptr< InformationGain<TREE_TYPE> > makeShared(typename IG_METRIC_TYPE<TREE_TYPE>::Utils::Config utils);
+    std::shared_ptr< InformationGain<TREE_TYPE> > makeShared(typename IG_METRIC_TYPE<TREE_TYPE>::Utils::Config utils);
     
   protected:
     IgFactory ig_factory_; //! Information gain factory.

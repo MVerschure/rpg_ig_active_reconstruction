@@ -26,7 +26,7 @@ namespace movements
  
 KinematicMovementDescription::KinematicMovementDescription( KinematicMovementDescriptionInstance* _to_enwrap )
 {
-  enwrapped_kinematic_movement_description_ = boost::shared_ptr<KinematicMovementDescriptionInstance>(_to_enwrap);
+  enwrapped_kinematic_movement_description_ = std::shared_ptr<KinematicMovementDescriptionInstance>(_to_enwrap);
 }
 
 std::string KinematicMovementDescription::type()
@@ -39,7 +39,7 @@ RelativeMovement KinematicMovementDescription::operator()( double _time )
   return (*enwrapped_kinematic_movement_description_)(_time);
 }
 
-boost::shared_ptr<KinematicMovementDescription::KinematicMovementDescriptionInstance> KinematicMovementDescription::operator->()
+std::shared_ptr<KinematicMovementDescription::KinematicMovementDescriptionInstance> KinematicMovementDescription::operator->()
 {
   return enwrapped_kinematic_movement_description_;
 }

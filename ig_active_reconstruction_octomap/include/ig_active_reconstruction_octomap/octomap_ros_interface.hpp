@@ -39,7 +39,7 @@ namespace octomap
   class RosInterface: public WorldRepresentation<TREE_TYPE>::LinkedObject
   {
   public:
-    typedef boost::shared_ptr< RosInterface<TREE_TYPE> > Ptr;
+    typedef std::shared_ptr< RosInterface<TREE_TYPE> > Ptr;
     typedef TREE_TYPE TreeType;
     
     struct Config

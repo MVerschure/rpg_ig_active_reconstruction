@@ -53,7 +53,7 @@ namespace ig_active_reconstruction
       running_procedure_.join();
   }
   
-  void BasicViewPlanner::setRobotCommUnit( boost::shared_ptr<robot::CommunicationInterface> robot_comm_unit )
+  void BasicViewPlanner::setRobotCommUnit( std::shared_ptr<robot::CommunicationInterface> robot_comm_unit )
   {
     if( runProcedure_ || running_procedure_.joinable() )
       return;
@@ -66,7 +66,7 @@ namespace ig_active_reconstruction
       status_ = Status::UNINITIALIZED;
   }
   
-  void BasicViewPlanner::setViewsCommUnit( boost::shared_ptr<views::CommunicationInterface> views_comm_unit )
+  void BasicViewPlanner::setViewsCommUnit( std::shared_ptr<views::CommunicationInterface> views_comm_unit )
   {
     if( runProcedure_ || running_procedure_.joinable() )
       return;
@@ -79,7 +79,7 @@ namespace ig_active_reconstruction
       status_ = Status::UNINITIALIZED;
   }
   
-  void BasicViewPlanner::setWorldCommUnit( boost::shared_ptr<world_representation::CommunicationInterface> world_comm_unit )
+  void BasicViewPlanner::setWorldCommUnit( std::shared_ptr<world_representation::CommunicationInterface> world_comm_unit )
   {
     if( runProcedure_ || running_procedure_.joinable() )
       return;
@@ -92,7 +92,7 @@ namespace ig_active_reconstruction
       status_ = Status::UNINITIALIZED;
   }
   
-  void BasicViewPlanner::setUtility( boost::shared_ptr<UtilityCalculator> utility_calculator )
+  void BasicViewPlanner::setUtility( std::shared_ptr<UtilityCalculator> utility_calculator )
   {
     if( runProcedure_ || running_procedure_.joinable() )
       return;
@@ -105,7 +105,7 @@ namespace ig_active_reconstruction
       status_ = Status::UNINITIALIZED;
   }
   
-  void BasicViewPlanner::setGoalEvaluationModule( boost::shared_ptr<GoalEvaluationModule> goal_evaluation_module )
+  void BasicViewPlanner::setGoalEvaluationModule( std::shared_ptr<GoalEvaluationModule> goal_evaluation_module )
   {
     if( runProcedure_ || running_procedure_.joinable() )
       return;
@@ -167,7 +167,7 @@ namespace ig_active_reconstruction
     goal_evaluation_module_->reset();
     
     // get viewspace................................................
-    viewspace_ = boost::make_shared<views::ViewSpace>();
+    viewspace_ = std::make_shared<views::ViewSpace>();
     views::CommunicationInterface::ViewSpaceStatus viewspace_status;
     do
     {

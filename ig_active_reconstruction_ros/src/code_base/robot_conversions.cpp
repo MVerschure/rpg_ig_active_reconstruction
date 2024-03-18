@@ -24,9 +24,9 @@ namespace ig_active_reconstruction
     
 namespace ros_conversions
 {
-  ig_active_reconstruction_msgs::MovementCostMsg movementCostToMsg(const robot::MovementCost& cost)
+  ig_active_reconstruction_msgs::msg::MovementCostMsg movementCostToMsg(const robot::MovementCost& cost)
   {
-    ig_active_reconstruction_msgs::MovementCostMsg msg;
+    ig_active_reconstruction_msgs::msg::MovementCostMsg msg;
     msg.cost = cost.cost;
     msg.exception = static_cast<uint32_t>(cost.exception);
     msg.additional_fields_names = cost.additional_field_names;
@@ -34,7 +34,7 @@ namespace ros_conversions
     return msg;
   }
 
-  robot::MovementCost movementCostFromMsg( ig_active_reconstruction_msgs::MovementCostMsg& _msg )
+  robot::MovementCost movementCostFromMsg( ig_active_reconstruction_msgs::msg::MovementCostMsg& _msg )
   {
     robot::MovementCost cost;
     cost.cost = _msg.cost;
@@ -46,18 +46,21 @@ namespace ros_conversions
   
   robot::CommunicationInterface::ReceptionInfo robotReceptionInfoFromMsg( int& receive_info )
   {
-    if( receive_info==0 )
+    if( receive_info==0 ){
       return robot::CommunicationInterface::ReceptionInfo::SUCCEEDED;
-    else if( receive_info==1 )
+    //else if( receive_info==1 )
+    }else{
       return robot::CommunicationInterface::ReceptionInfo::FAILED;
+    }
   }
   
   int robotReceptionInfoToMsg( robot::CommunicationInterface::ReceptionInfo& info )
   {
-    if( info==robot::CommunicationInterface::ReceptionInfo::SUCCEEDED )
+    if( info==robot::CommunicationInterface::ReceptionInfo::SUCCEEDED ){
       return 0;
-    else
+    }else{
       return 1;
+    }
   }
 }
 

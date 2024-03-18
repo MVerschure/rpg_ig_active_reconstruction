@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "ig_active_reconstruction_msgs/ViewMsg.h"
-#include "ig_active_reconstruction_msgs/ViewSpaceMsg.h"
+#include "ig_active_reconstruction_msgs/msg/view_msg.hpp"
+#include "ig_active_reconstruction_msgs/msg/view_space_msg.hpp"
 
 #include "ig_active_reconstruction/view.hpp"
 #include "ig_active_reconstruction/view_space.hpp"
@@ -33,18 +33,18 @@ namespace ros_conversions
   
     /*! Converts a view to a view message.
       */
-    ig_active_reconstruction_msgs::ViewMsg viewToMsg( const views::View& view );
+    ig_active_reconstruction_msgs::msg::ViewMsg viewToMsg( const views::View& view );
 
     /*! Constructs a new view from a view message.
       */
-    views::View viewFromMsg( ig_active_reconstruction_msgs::ViewMsg& msg );
+    views::View viewFromMsg( ig_active_reconstruction_msgs::msg::ViewMsg& msg );
     
     /** Creates a view space msg with the content of the view space
     */
-    ig_active_reconstruction_msgs::ViewSpaceMsg viewSpaceToMsg( const views::ViewSpace& view_space );
+    ig_active_reconstruction_msgs::msg::ViewSpaceMsg viewSpaceToMsg( const views::ViewSpace& view_space );
     
     /** Construct view space from message */
-    views::ViewSpace viewSpaceFromMsg( ig_active_reconstruction_msgs::ViewSpaceMsg& msg );
+    views::ViewSpace viewSpaceFromMsg( ig_active_reconstruction_msgs::msg::ViewSpaceMsg& msg );
     
   
     views::CommunicationInterface::ViewSpaceStatus viewSpaceStatusFromMsg( int& msg );
