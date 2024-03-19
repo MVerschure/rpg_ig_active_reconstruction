@@ -55,7 +55,6 @@ namespace robot
     } else {
       throw std::runtime_error("RosClientCI::getCurrentView failed for unknown reason.");
     }
-
   }
   
   RosClientCI::ReceptionInfo RosClientCI::retrieveData()

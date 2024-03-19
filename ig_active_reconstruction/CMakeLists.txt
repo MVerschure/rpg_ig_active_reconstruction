@@ -15,7 +15,7 @@ find_package(Boost REQUIRED)
 
 
 include_directories(include
-  ${catkin_INCLUDE_DIRS}
+  #${catkin_INCLUDE_DIRS}
   ${movements_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
@@ -31,6 +31,8 @@ add_library(${PROJECT_NAME} STATIC
   ${${PROJECT_NAME}_CODE_BASE}
 )
 
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ament_export_dependencies(movements)
 target_link_libraries(${PROJECT_NAME}
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
@@ -41,7 +43,17 @@ install(
   DESTINATION include
 )
 
+
+install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT export_${PROJECT_NAME}
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include
+)
+
 ament_export_include_directories(include)
 #ament_export_libraries(${PROJECT_NAME})
-ament_export_dependencies(movements)
+
 ament_package()

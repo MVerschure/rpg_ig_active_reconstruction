@@ -22,10 +22,19 @@ file(GLOB ${PROJECT_NAME}_CODE_BASE
 add_library(${PROJECT_NAME}
   ${${PROJECT_NAME}_CODE_BASE}
 )
-
 ament_target_dependencies(${PROJECT_NAME}
   geometry_msgs
   angles
+)
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+
+install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT export_${PROJECT_NAME}
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include
 )
 
 install(

@@ -56,7 +56,7 @@ namespace ros_conversions
 
     /*! Constructs a new view from a view message.
       */
-    views::View viewFromMsg( ig_active_reconstruction_msgs::msg::ViewMsg& msg );
+    //views::View viewFromMsg( ig_active_reconstruction_msgs::msg::ViewMsg& msg );
     
     /** Creates a view space msg with the content of the view space
     */
