@@ -42,11 +42,11 @@ namespace octomap
   
   void IgTreeNode::expandNode()
   {
-    assert(!hasChildren());
+    assert(!children); // If children is NULL,
 
     for (unsigned int k=0; k<8; k++) {
       createChild(k);
-      children[k]->setValue(value);
+      getChild(k)->setValue(value);
     }
   }
   

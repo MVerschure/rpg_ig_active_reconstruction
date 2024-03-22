@@ -66,7 +66,7 @@ namespace ros_tools
     return service_response_;
   }
   
-  void PclRerouter::pclCallback( const sensor_msgs::PointCloud2ConstPtr& msg )
+  void PclRerouter::pclCallback( const sensor_msgs::PointCloud2SharedPtr& msg )
   {
     if(forward_one_)
     {

@@ -18,9 +18,9 @@
 #define TEMPT template<class TREE_TYPE>
 #define CSCOPE RosInterface<TREE_TYPE>
 
-#include <visualization_msgs/MarkerArray.h>
-#include <geometry_msgs/Point.h>
-#include <std_msgs/ColorRGBA.h>
+#include <visualization_msgs/msg/marker_array.hpp>
+#include <geometry_msgs/msg/point.hpp>
+#include <std_msgs/msg/color_rgba.hpp>
 
 namespace ig_active_reconstruction
 {
@@ -32,23 +32,23 @@ namespace octomap
 {
   TEMPT
   CSCOPE::RosInterface(Config config)
-  : nh_(config.nh)
+  : node_(config.node_)
   , world_frame_name_(config.world_frame_name)
   {
-    voxel_map_publisher_ = nh_.advertise<visualization_msgs::MarkerArray>("occupied_cells_vis_array", 1);
+    voxel_map_publisher_ = node_->create_publisher<visualization_msgs::msg::MarkerArray>("occupied_cells_vis_array", 1); 
   }
   
   TEMPT
   void CSCOPE::publishVoxelMap()
   {
-    if( voxel_map_publisher_.getNumSubscribers()==0 )
-      return;
+    //if( voxel_map_publisher_.getNumSubscribers()==0 )
+    //   return;
     
-    visualization_msgs::MarkerArray occupiedNodesVis;
+    visualization_msgs::msg::MarkerArray occupiedNodesVis;
     // each array stores all cubes of a different size, one for each depth level:
     occupiedNodesVis.markers.resize(this->link_.octree->getTreeDepth()+1);
         
-    std_msgs::ColorRGBA color;
+    std_msgs::msg::ColorRGBA color;
     color.r = 0;
     color.g = 0;
     color.b = 1;
@@ -61,7 +61,7 @@ namespace octomap
       double y = it.getY();
       double z = it.getZ();
       
-      geometry_msgs::Point cubeCenter;
+      geometry_msgs::msg::Point cubeCenter;
       cubeCenter.x = x;
       cubeCenter.y = y;
       cubeCenter.z = z;
@@ -81,22 +81,22 @@ namespace octomap
       double size = this->link_.octree->getNodeSize(i);
       
       occupiedNodesVis.markers[i].header.frame_id = world_frame_name_;
-      occupiedNodesVis.markers[i].header.stamp = ros::Time::now();
+      occupiedNodesVis.markers[i].header.stamp = node_->get_clock()->now();
       occupiedNodesVis.markers[i].ns = "map";
       occupiedNodesVis.markers[i].id = i;
-      occupiedNodesVis.markers[i].type = visualization_msgs::Marker::CUBE_LIST;
+      occupiedNodesVis.markers[i].type = visualization_msgs::msg::Marker::CUBE_LIST;
       occupiedNodesVis.markers[i].scale.x = size;
       occupiedNodesVis.markers[i].scale.y = size;
       occupiedNodesVis.markers[i].scale.z = size;
       occupiedNodesVis.markers[i].color = color;
       
       if (occupiedNodesVis.markers[i].points.size() > 0)
-        occupiedNodesVis.markers[i].action = visualization_msgs::Marker::ADD;
+        occupiedNodesVis.markers[i].action = visualization_msgs::msg::Marker::ADD;
       else
-        occupiedNodesVis.markers[i].action = visualization_msgs::Marker::DELETE;
+        occupiedNodesVis.markers[i].action = visualization_msgs::msg::Marker::DELETE;
     }
     
-    voxel_map_publisher_.publish(occupiedNodesVis);
+    voxel_map_publisher_->publish(occupiedNodesVis);
   }
   
 }

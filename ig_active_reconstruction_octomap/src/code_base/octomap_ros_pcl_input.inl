@@ -21,7 +21,7 @@
 #include <pcl/point_types.h>
 #include <pcl/conversions.h>
 #include <pcl_conversions/pcl_conversions.h>
-#include <pcl_ros/transforms.h>
+//#include <pcl_ros/transforms.h>
 
 namespace ig_active_reconstruction
 {
@@ -32,15 +32,18 @@ namespace world_representation
 namespace octomap
 {
   TEMPT
-  CSCOPE::RosPclInput( ros::NodeHandle nh, std::shared_ptr< PclInput<TREE_TYPE,POINTCLOUD_TYPE> > pcl_input, std::string world_frame )
-  : nh_(nh)
-  , pcl_input_(pcl_input)
-  , world_frame_name_(world_frame)
-  , tf_listener_(ros::Duration(180))
-  {
-    pcl_subscriber_ = nh_.subscribe("pcl_input",10,&CSCOPE::insertCloudCallback,this);
-    pcl_input_service_ = nh_.advertiseService("pcl_input", &CSCOPE::insertCloudService,this);
-  }
+  CSCOPE::RosPclInput(std::shared_ptr<rclcpp::Node> node, std::shared_ptr<PclInput<TREE_TYPE, POINTCLOUD_TYPE>> pcl_input, std::string world_frame)
+    : node_(node), pcl_input_(pcl_input), world_frame_name_(world_frame)
+    {
+        pcl_subscriber_ = node_->create_subscription<sensor_msgs::msg::PointCloud2>(
+            "pcl_input", 10, std::bind(&CSCOPE::insertCloudCallback, this, std::placeholders::_1));
+
+        pcl_input_service_ = node_->create_service<ig_active_reconstruction_msgs::srv::PclInput>(
+            "pcl_input", std::bind(&CSCOPE::insertCloudService, this, std::placeholders::_1, std::placeholders::_2));
+
+        tf_buffer_ =std::make_unique<tf2_ros::Buffer>(node_->get_clock());
+        tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+    }
   
   TEMPT
   void CSCOPE::addInputDoneSignalCall( boost::function<void()> signal_call )
@@ -49,27 +52,30 @@ namespace octomap
   }
   
   TEMPT
-  void CSCOPE::insertCloudCallback(const sensor_msgs::PointCloud2::ConstPtr& cloud)
+  void CSCOPE::insertCloudCallback(const std::shared_ptr<sensor_msgs::msg::PointCloud2> cloud)
   {
-    ROS_INFO("Received new pointcloud. Inserting...");
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received new pointcloud. Inserting...");
     POINTCLOUD_TYPE pc;
     pcl::fromROSMsg(*cloud, pc);
     
     insertCloud(pc);
-    ROS_INFO("Inserted new pointcloud");
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Inserted new pointcloud");
   }
   
   TEMPT
-  bool CSCOPE::insertCloudService( ig_active_reconstruction_msgs::PclInput::Request& req, ig_active_reconstruction_msgs::PclInput::Response& res)
+  bool CSCOPE::insertCloudService(
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::PclInput::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::PclInput::Response> response
+    )
   {
-    ROS_INFO("Received new pointcloud. Inserting...");
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Received new pointcloud. Inserting...");
     POINTCLOUD_TYPE pc;
-    pcl::fromROSMsg(req.pointcloud, pc);
+    pcl::fromROSMsg(request->pointcloud, pc);
     
     insertCloud(pc);
     
-    ROS_INFO("Inserted new pointcloud");
-    res.success = true;
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Inserted new pointcloud");
+    response->success = true;
     return true;
   }
   
@@ -85,26 +91,35 @@ namespace octomap
   TEMPT
   void CSCOPE::insertCloud( POINTCLOUD_TYPE& pointcloud )
   {
-    tf::StampedTransform sensor_to_world_tf;
+    geometry_msgs::msg::TransformStamped sensor_to_world_tf;
     try
     {
-      tf_listener_.lookupTransform(world_frame_name_, pointcloud.header.frame_id, ros::Time(0), sensor_to_world_tf);
+      sensor_to_world_tf = tf_buffer_->lookupTransform(world_frame_name_, pointcloud.header.frame_id, tf2::TimePointZero);
     }
-    catch(tf::TransformException& ex)
+    catch(tf2::TransformException& ex)
     {
-      ROS_ERROR_STREAM( "RosPclInput<TREE_TYPE,POINTCLOUD_TYPE>::Transform error of sensor data: " << ex.what() << ", quitting callback.");
+      RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "RosPclInput<TREE_TYPE,POINTCLOUD_TYPE>::Transform error of sensor data: ..., quitting callback.");
       return;
     }
     
     Eigen::Matrix4f sensor_to_world;
-    pcl_ros::transformAsMatrix(sensor_to_world_tf, sensor_to_world);
+    //pcl_ros::transformAsMatrix(sensor_to_world_tf, sensor_to_world);
+    // Convert the transform to Eigen format
+    Eigen::Translation3f t(sensor_to_world_tf.transform.translation.x,
+                 sensor_to_world_tf.transform.translation.y,
+                 sensor_to_world_tf.transform.translation.z);
+
+    Eigen::Quaternionf q(sensor_to_world_tf.transform.rotation.w,
+               sensor_to_world_tf.transform.rotation.x,
+               sensor_to_world_tf.transform.rotation.y,
+               sensor_to_world_tf.transform.rotation.z);
+
+    sensor_to_world = (t * q).matrix();
     
     Eigen::Transform<double,3,Eigen::Affine> sensor_to_world_transform;
     sensor_to_world_transform = sensor_to_world.cast<double>();
     
     pcl_input_->push(sensor_to_world_transform,pointcloud);
-    
-    
     
     issueInputDoneSignals();
   }
@@ -117,3 +132,4 @@ namespace octomap
 
 #undef CSCOPE
 #undef TEMPT
+

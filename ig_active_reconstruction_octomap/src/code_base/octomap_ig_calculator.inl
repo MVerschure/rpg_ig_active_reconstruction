@@ -51,7 +51,7 @@ namespace octomap
     std::string name = prototype->type();
     
     boost::function< std::shared_ptr< InformationGain<TREE_TYPE> >() > creator;    
-    creator = boost::bind(&IgCalculator<TREE_TYPE>::makeShared<IG_METRIC_TYPE>, this, utils);
+    creator = std::bind(&IgCalculator<TREE_TYPE>::makeShared<IG_METRIC_TYPE>, this, utils);
     
     return ig_factory_.add(name,creator);
   }

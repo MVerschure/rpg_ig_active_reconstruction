@@ -18,7 +18,7 @@
 #pragma once
 
 
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include "ig_active_reconstruction/world_representation_communication_interface.hpp"
 
 #include "ig_active_reconstruction_msgs/srv/information_gain_calculation.hpp"

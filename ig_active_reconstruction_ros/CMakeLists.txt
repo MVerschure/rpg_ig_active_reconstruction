@@ -12,7 +12,12 @@ find_package(movements REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread chrono)
 
 INCLUDE_DIRECTORIES ( "$ENV{EIGEN3_INCLUDE_DIR}" )
+include_directories(include
+  ${Boost_INCLUDE_DIRS}
+#  ig_active_reconstruction_msgs_INCLUDE_DIRS
+)
 
+# Library -----------------------------------------------
 
 file(GLOB ${PROJECT_NAME}_CODE_BASE
   "src/code_base/*.cpp"
@@ -27,13 +32,20 @@ ament_target_dependencies(${PROJECT_NAME}
   ig_active_reconstruction_msgs
   ig_active_reconstruction
   movements
-  
 )
 
-include_directories(include
-  ${Boost_INCLUDE_DIRS}
-#  ig_active_reconstruction_msgs_INCLUDE_DIRS
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+
+
+install(
+    TARGETS ${PROJECT_NAME}
+    EXPORT export_${PROJECT_NAME}
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include
 )
+
 
 # Executables...........................................................
 
@@ -63,11 +75,25 @@ ament_target_dependencies(simple_viewspace_module
   movements
 )
 
+# Include -------------------------------------------------
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
+# Launch files --------------------------------------------
+install(
+  DIRECTORY launch
+  DESTINATION share/${PROJECT_NAME}
+)
+
+
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
 ament_export_dependencies(
   movements
-  roscpp
+  rclcpp
   ig_active_reconstruction_msgs
   ig_active_reconstruction
 )

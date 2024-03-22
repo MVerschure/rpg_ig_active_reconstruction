@@ -17,7 +17,7 @@
 
 #include "flying_gazebo_stereo_cam/controller.hpp"
 
-#include "ros/ros.h"
+#include "rclcpp/rclcpp.hpp"
 #include "gazebo_msgs/SetModelState.h"
 #include "gazebo_msgs/GetModelState.h"
 #include <movements/ros_movements.h>

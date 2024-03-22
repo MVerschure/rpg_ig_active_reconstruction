@@ -17,11 +17,14 @@
 
 #pragma once
 
-#include <ros/ros.h>
-#include <tf/transform_listener.h>
+#include <rclcpp/rclcpp.hpp>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
+#include <tf2/exceptions.h>
 
-#include <sensor_msgs/PointCloud2.h>
-#include "ig_active_reconstruction_msgs/PclInput.h"
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <sensor_msgs/msg/point_cloud2.hpp>
+#include "ig_active_reconstruction_msgs/srv/pcl_input.hpp"
 
 #include "ig_active_reconstruction_octomap/octomap_pcl_input.hpp"
 
@@ -48,7 +51,7 @@ namespace octomap
      * @param pcl_input PclInput object pointer to which pointclouds are forwarded.
      * @param world_frame Name of the world coordinate frame to which the incoming pointclouds will be transformed.
      */
-    RosPclInput( ros::NodeHandle nh, std::shared_ptr< PclInput<TREE_TYPE,POINTCLOUD_TYPE> > pcl_input, std::string world_frame );
+    RosPclInput( std::shared_ptr<rclcpp::Node> node, std::shared_ptr< PclInput<TREE_TYPE,POINTCLOUD_TYPE> > pcl_input, std::string world_frame );
     
     /*! Add a function that will be called after a new input was processed.
      * @param signal_call The function.
@@ -58,12 +61,14 @@ namespace octomap
   protected:
     /*! Pcl input topic listener.
      */
-    void insertCloudCallback(const sensor_msgs::PointCloud2::ConstPtr& cloud);
+    void insertCloudCallback(const std::shared_ptr<sensor_msgs::msg::PointCloud2> cloud);
     
-    /*! Pcl input service.
+    /*! Pcl input service.S
      */
-    bool insertCloudService( ig_active_reconstruction_msgs::PclInput::Request& req, ig_active_reconstruction_msgs::PclInput::Response& res);
-    
+    bool insertCloudService(
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::PclInput::Request> request,
+    std::shared_ptr<ig_active_reconstruction_msgs::srv::PclInput::Response> response
+    );
     /*! Helper function calling the signal call stack.
      */
     void issueInputDoneSignals();
@@ -73,17 +78,18 @@ namespace octomap
     void insertCloud( POINTCLOUD_TYPE& pointcloud );
     
   private:
-    ros::NodeHandle nh_;
+    std::shared_ptr<rclcpp::Node> node_;
     std::shared_ptr< PclInput<TREE_TYPE,POINTCLOUD_TYPE> > pcl_input_;
     
     std::string world_frame_name_;
     
     std::vector< boost::function<void()> > signal_call_stack_;
     
-    ros::Subscriber pcl_subscriber_;
-    ros::ServiceServer pcl_input_service_;
+    rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr pcl_subscriber_;
+    rclcpp::Service<ig_active_reconstruction_msgs::srv::PclInput>::SharedPtr pcl_input_service_;
     
-    tf::TransformListener tf_listener_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
   };
 }
 

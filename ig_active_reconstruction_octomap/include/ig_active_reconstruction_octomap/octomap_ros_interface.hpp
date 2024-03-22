@@ -17,9 +17,10 @@
 
 #pragma once
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include "ig_active_reconstruction_octomap/octomap_world_representation.hpp"
+#include <visualization_msgs/msg/marker_array.hpp>
 
 namespace ig_active_reconstruction
 {
@@ -44,7 +45,7 @@ namespace octomap
     
     struct Config
     {
-      ros::NodeHandle nh;
+      rclcpp::Node::SharedPtr node_;
       std::string world_frame_name;
     };
     
@@ -61,9 +62,9 @@ namespace octomap
     //bool resetSrv(std_srvs::Empty::Request& req, std_srvs::Empty::Response& resp);
     
   private:
-    ros::NodeHandle nh_;
+    rclcpp::Node::SharedPtr node_;;
     std::string world_frame_name_;
-    ros::Publisher voxel_map_publisher_;
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr voxel_map_publisher_;
   };
   
 }

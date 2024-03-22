@@ -24,7 +24,7 @@ namespace ig_active_reconstruction
   
 namespace world_representation
 {
-
+  
 namespace octomap
 {
   IgTree::Config::Config()

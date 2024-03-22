@@ -16,7 +16,7 @@
 */
 
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <ig_active_reconstruction_ros/param_loader.hpp>
 #include <ig_active_reconstruction_ros/robot_ros_server_ci.hpp>

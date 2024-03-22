@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include "ig_active_reconstruction/robot_communication_interface.hpp"
 #include "flying_gazebo_stereo_cam/controller.hpp"
 #include "flying_gazebo_stereo_cam/pcl_rerouter.hpp"

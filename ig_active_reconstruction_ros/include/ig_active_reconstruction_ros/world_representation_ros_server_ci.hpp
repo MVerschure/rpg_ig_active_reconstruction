@@ -41,7 +41,7 @@ namespace world_representation
      * @param nh ROS node handle defines the namespace in which ROS communication will be carried out.
      * @param linked_interface (optional) directly add the interface that is linked internally (to which requests are forwarded.
      */
-    RosServerCI( rclcpp::Node::SharedPtr nh, POINTER_TYPE<CommunicationInterface> linked_interface = nullptr );
+    RosServerCI( rclcpp::Node::SharedPtr node, POINTER_TYPE<CommunicationInterface> linked_interface = nullptr );
     
     virtual ~RosServerCI(){};
     
@@ -67,13 +67,13 @@ namespace world_representation
     virtual void availableMapMetrics( std::vector<MetricInfo>& available_map_metrics );
     
   protected:
-    bool igComputationService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<ig_active_reconstruction_msgs::srv::InformationGainCalculation::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::InformationGainCalculation::Response> res );
-    bool mmComputationService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<ig_active_reconstruction_msgs::srv::MapMetricCalculation::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::MapMetricCalculation::Response> res );
-    bool availableIgService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Response> res );
-    bool availableMmService(const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Request> req, std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Response> res );
+    bool igComputationService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::InformationGainCalculation::Request> request, std::shared_ptr<ig_active_reconstruction_msgs::srv::InformationGainCalculation::Response> response );
+    bool mmComputationService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::MapMetricCalculation::Request> request, std::shared_ptr<ig_active_reconstruction_msgs::srv::MapMetricCalculation::Response> response );
+    bool availableIgService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Request> request, std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Response> response );
+    bool availableMmService(const std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Request> request, std::shared_ptr<ig_active_reconstruction_msgs::srv::StringList::Response> response );
     
   protected:
-    rclcpp::Node::SharedPtr nh_;
+    rclcpp::Node::SharedPtr node_;
     
     POINTER_TYPE<CommunicationInterface> linked_interface_; //! Linked interface.
     
@@ -89,4 +89,4 @@ namespace world_representation
 
 }
 
-#include "../src/code_base/world_representation_ros_server_ci.inl"
+#include "ig_active_reconstruction_ros/world_representation_ros_server_ci.inl"

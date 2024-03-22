@@ -21,6 +21,8 @@
 #include <octomap/octomap_types.h>
 #include <octomap/octomap_utils.h>
 #include <octomap/OcTreeNode.h>
+#include <octomap/OccupancyOcTreeBase.h>
+
 
 #include <limits>
 
@@ -54,15 +56,60 @@ namespace octomap
 
     bool createChild(unsigned int i);
 
-    // overloaded, so that the return type is correct:
+    // Implementing some basic functanallity that was depricated by default
+    // Probablly not best practise to do this in a header file, but that is an issue for later :)
+
     inline IgTreeNode* getChild(unsigned int i)
     {
-      return static_cast<IgTreeNode*> (::octomap::OcTreeDataNode<float>::getChild(i));
+      return static_cast<IgTreeNode*> (::octomap::OcTreeDataNode<float>::children[i]);
     }
     inline const IgTreeNode* getChild(unsigned int i) const
     {
-      return static_cast<const IgTreeNode*> (::octomap::OcTreeDataNode<float>::getChild(i));
+      return static_cast<const IgTreeNode*> (::octomap::OcTreeDataNode<float>::children[i]);
     }
+
+    inline bool childExists(unsigned int i)
+    {
+      try
+      {
+        IgTreeNode* child_i = static_cast<IgTreeNode*> (::octomap::OcTreeDataNode<float>::children[i]);
+        return true;
+      }
+      catch(const std::exception& e)
+      {
+        return false;
+      }
+    }
+
+    inline bool childExists(unsigned int i) const
+    {
+      try
+      {
+        const IgTreeNode* child_i = static_cast<const IgTreeNode*> (::octomap::OcTreeDataNode<float>::children[i]);
+        return true;
+      }
+      catch(const std::exception& e)
+      {
+        return false;
+      }
+    }
+
+    inline bool hasChildren()
+    {
+      if(::octomap::OcTreeDataNode<float>::children){
+        return true;
+      }
+      return false;
+    }
+
+    inline bool hasChildren() const
+    {
+      if(::octomap::OcTreeDataNode<float>::children){
+        return true;
+      }
+      return false;
+    }
+
 
     // -- node occupancy  ----------------------------
 
