@@ -168,7 +168,7 @@ namespace ig_active_reconstruction
     
     // get viewspace................................................
     viewspace_ = std::make_shared<views::ViewSpace>();
-    views::CommunicationInterface::ViewSpaceStatus viewspace_status;
+    //views::CommunicationInterface::ViewSpaceStatus viewspace_status;
     do
     {
       status_ = Status::DEMANDING_VIEWSPACE;
@@ -247,7 +247,7 @@ namespace ig_active_reconstruction
       
       // update viewspace
       viewspace_->setVisited(nbv_id);
-      if( config_.max_visits!=-1 && viewspace_->timesVisited(nbv_id) >= config_.max_visits )
+      if( config_.max_visits!=-1 && viewspace_->timesVisited(nbv_id) >= (unsigned int)config_.max_visits )
 	viewspace_->setBad(nbv_id);
       
     }while( runProcedure_ );
