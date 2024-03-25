@@ -10,9 +10,10 @@ find_package(ig_active_reconstruction_msgs REQUIRED)
 find_package(ig_active_reconstruction REQUIRED)
 find_package(movements REQUIRED)
 find_package(Boost REQUIRED COMPONENTS thread chrono)
+find_package(Eigen3 REQUIRED)
 
-INCLUDE_DIRECTORIES ( "$ENV{EIGEN3_INCLUDE_DIR}" )
 include_directories(include
+  ${EIGEN3_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 #  ig_active_reconstruction_msgs_INCLUDE_DIRS
 )

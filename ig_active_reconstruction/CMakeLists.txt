@@ -12,15 +12,14 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(movements REQUIRED)
 find_package(Boost REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 
 include_directories(include
-  #${catkin_INCLUDE_DIRS}
   ${movements_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
 )
-
-INCLUDE_DIRECTORIES ( "$ENV{EIGEN3_INCLUDE_DIR}" )
 
 file(GLOB ${PROJECT_NAME}_CODE_BASE
   "src/code_base/*.cpp"
@@ -34,7 +33,6 @@ add_library(${PROJECT_NAME} STATIC
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(movements)
 target_link_libraries(${PROJECT_NAME}
-   ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
 )
 
