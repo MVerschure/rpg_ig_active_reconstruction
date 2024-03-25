@@ -22,7 +22,7 @@ find_package(std_msgs REQUIRED)
 find_package(octomap REQUIRED)
 find_package(Boost REQUIRED)
 find_package(PCL 1.7 REQUIRED)
-find_package(Eigen REQUIRED)
+#find_package(Eigen REQUIRED)
 
 
 include_directories(include
