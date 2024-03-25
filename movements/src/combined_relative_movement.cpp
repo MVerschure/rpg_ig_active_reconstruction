@@ -39,6 +39,7 @@ CombinedRelativeMovement& CombinedRelativeMovement::operator=( RelativeMovement 
 {
   relative_movement_queue_.clear();
   relative_movement_queue_.push_back( _to_equal );
+  return *this;
 }
 
 CombinedRelativeMovement CombinedRelativeMovement::operator+( CombinedRelativeMovement const& _to_add )
