@@ -66,7 +66,6 @@ ament_target_dependencies(${PROJECT_NAME}
 )
 
 # Executables...........................................................
-
 add_executable(octomap_world_representation
   src/ros_nodes/octomap_world_representation.cpp
   ${${PROJECT_NAME}_CODE_BASE}
@@ -88,11 +87,12 @@ ament_target_dependencies(octomap_world_representation
 )
 
 # Launch files...........................................................
-install(DIRECTORY
-  launch
+install(
+  DIRECTORY launch/
   DESTINATION share/${PROJECT_NAME}
 )
 
+# Ament package..........................................................
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
 ament_export_dependencies(
