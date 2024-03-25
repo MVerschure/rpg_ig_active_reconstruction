@@ -1,3 +1,19 @@
+# ROS2
+ To build
+
+    mkdir -p ws/src
+    cd ws/src
+    git clone -b ros2 https://github.com/MVerschure/rpg_ig_active_reconstruction.git
+
+It depends on the Eigen library trhough the `EIGEN3_INCLUDE_DIR`. I "installed" it by downloading the library from [here](https://eigen.tuxfamily.org/index.php?title=Main_Page) and running
+
+    export EIGEN3_INCLUDE_DIR='path/to/eigen-3.4.0'
+
+Then to build run in root directory of the workspace
+
+    colcon build --symlink-install --packages-skip flying_gazebo_stereo_cam
+
+
 Information Gain Based Active Reconstruction
 ============================================
 
