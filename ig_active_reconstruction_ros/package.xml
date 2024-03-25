@@ -17,9 +17,13 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>roscpp</depend>
+  <depend>rclcpp</depend>
   <depend>ig_active_reconstruction_msgs</depend>
   <depend>ig_active_reconstruction</depend>
   <depend>movements</depend>
+  
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
   
 </package>

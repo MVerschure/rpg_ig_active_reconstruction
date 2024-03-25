@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package format="3">
   <name>movements</name>
   <version>0.1.0</version>
   <description>Library for representing relative movements in space</description>
@@ -9,13 +9,9 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <build_depend>angles</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>cmake_modules</build_depend>
-  
-  <run_depend>cmake_modules</run_depend>
-  <run_depend>angles</run_depend>
-  <run_depend>geometry_msgs</run_depend>
+  <depend>angles</depend>
+  <depend>geometry_msgs</depend>
+  <depend>cmake_modules</depend>
 
   <export>
   <build_type>ament_cmake</build_type>

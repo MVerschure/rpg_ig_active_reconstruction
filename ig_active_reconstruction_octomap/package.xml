@@ -22,7 +22,8 @@
   <depend>ig_active_reconstruction_ros</depend>
   <depend>sensor_msgs</depend>
   <depend>ig_active_reconstruction_msgs</depend>
-  <depend>tf</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
   <depend>pcl_ros</depend>
   <depend>visualization_msgs</depend>
   <depend>geometry_msgs</depend>
