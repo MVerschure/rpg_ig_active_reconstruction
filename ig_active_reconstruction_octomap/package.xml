@@ -16,6 +16,7 @@
 
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  
   <depend>movements</depend>
   <depend>ig_active_reconstruction</depend>
   <depend>rclcpp</depend>
@@ -29,5 +30,7 @@
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
 
-
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>
