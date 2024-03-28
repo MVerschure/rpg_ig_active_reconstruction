@@ -64,6 +64,11 @@ ament_target_dependencies(${PROJECT_NAME}
   visualization_msgs
 )
 
+install(TARGETS
+  ${PROJECT_NAME}
+  DESTINATION lib
+)
+
 # Executables...........................................................
 add_executable(octomap_world_representation
   src/ros_nodes/octomap_world_representation.cpp
@@ -83,6 +88,11 @@ ament_target_dependencies(octomap_world_representation
   sensor_msgs
   pcl_ros
   visualization_msgs
+)
+
+install(TARGETS
+  octomap_world_representation
+  DESTINATION lib/${PROJECT_NAME}
 )
 
 # Launch files...........................................................
