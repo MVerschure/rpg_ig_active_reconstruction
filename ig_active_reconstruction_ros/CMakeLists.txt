@@ -76,6 +76,12 @@ ament_target_dependencies(simple_viewspace_module
   movements
 )
 
+install(TARGETS
+  basic_view_planner
+  simple_viewspace_module
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 # Include -------------------------------------------------
 
 install(
